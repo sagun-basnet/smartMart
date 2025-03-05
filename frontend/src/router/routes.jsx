@@ -10,6 +10,7 @@ import Register from "../pages/Register"
 
 
 
+import AddProduct from "../components/AddProduct";
 
 const AppRoutes = createBrowserRouter([
     {
@@ -35,7 +36,39 @@ const AppRoutes = createBrowserRouter([
         ],
     },
 
+    {
+        path: "/login",
+        element: <Login />
+    },
+    {
+        path: "/register",
+        element: <Register />
+    },
 
+  {
+    path: "/",
+    element: <MainLayout />,
+    children: [
+      {
+        path: "/",
+        element: <Home />,
+      },
+    ],
+  },
+  {
+    path: "/dashboard",
+    element: <DashboardLayout />,
+    children: [{ path: "", element: <ProductsList /> }],
+  },
+  {
+    path: "/products",
+    element: <DashboardLayout />,
+    children: [{ path: "", element: <ProductsList /> }],
+  },
+  {
+    path: "/add-product",
+    element: <AddProduct />,
+  },
 
   { path: "*", element: <NotFound /> }, // 404 Page
 ]);
