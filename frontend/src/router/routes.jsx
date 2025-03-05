@@ -22,9 +22,19 @@ const AppRoutes = createBrowserRouter([
         path: "/dashboard",
         element: <DashboardLayout />,
         children: [
-            { path: "products", element: <ProductsList /> }
+            { path: "", element: <ProductsList /> }
         ],
     },
+    {
+        path: "/products",
+        element: <DashboardLayout />,
+        children: [
+            { path: "", element: <ProductsList /> }
+        ],
+    },
+
+
+
     { path: "*", element: <NotFound /> }, // 404 Page
 ]);
 
