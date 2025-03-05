@@ -18,10 +18,10 @@ const Navbar = () => {
 
                 <div className="relative">
                     <select className="bg-transparent border-none text-gray-700 focus:outline-none">
-                        <option value="" disabled>Categories</option>
-                        <option value="new-arrivals">New Arrivals</option>
-                        <option value="best-sellers">Best Sellers</option>
-                        <option value="featured-products">Featured Products</option>
+                        <option value="" disabled className="text-center">Categories</option>
+                        <option value="new-arrivals " className="text-center">New Arrivals</option>
+                        <option value="best-sellers" className="text-center">Best Sellers</option>
+                        <option value="featured-products" className="text-center">Featured Products</option>
                     </select>
                 </div>
 
@@ -37,18 +37,18 @@ const Navbar = () => {
             </div>
 
             {/* Search Input */}
-            <div className="hidden md:flex items-center">
+            <div className="hidden md:flex items-center rounded-2xl">
                 <input
                     type="search"
                     placeholder="Search..."
-                    className="h-10 w-40 md:w-56 border-2 border-gray-300 rounded-full px-4 focus:outline-none"
+                    className="h-10 w-40 md:w-70 border-2 border-gray-300 rounded-lg px-4 focus:outline-none"
                 />
             </div>
 
             {/* User and Cart Icons */}
             <div className="flex items-center space-x-4">
-                <Link to="/login" className="flex items-center hover:underline">
-                    <i className="fa-regular fa-user text-2xl mr-2"></i>
+                <Link to="/Login" className="flex items-center hover:underline">
+                    <i className="fa-regular fa-user text-lg mr-2"></i>
                     <p className="hidden md:block">Login/Register</p>
                 </Link>
 

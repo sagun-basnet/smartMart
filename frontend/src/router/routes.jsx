@@ -5,33 +5,37 @@ import Home from "../pages/Home";
 import NotFound from "../pages/PageNotFound";
 import Navbar from "../components/Navbar";
 import MainLayout from "../layouts/MainLayout";
-import AddProduct from "../components/AddProduct";
+import Login from "../pages/Login";
+import Register from "../pages/Register"
+
+
+
 
 const AppRoutes = createBrowserRouter([
-  {
-    path: "/",
-    element: <MainLayout />,
-    children: [
-      {
-        path: "/",
-        element: <Home />,
-      },
-    ],
-  },
-  {
-    path: "/dashboard",
-    element: <DashboardLayout />,
-    children: [{ path: "", element: <ProductsList /> }],
-  },
-  {
-    path: "/products",
-    element: <DashboardLayout />,
-    children: [{ path: "", element: <ProductsList /> }],
-  },
-  {
-    path: "/add-product",
-    element: <AddProduct />,
-  },
+    {
+        path: "/", element: <MainLayout />,
+        children: [
+            {
+                path: "/", element: <Home />
+            },
+        ]
+    },
+    {
+        path: "/dashboard",
+        element: <DashboardLayout />,
+        children: [
+            { path: "", element: <ProductsList /> }
+        ],
+    },
+    {
+        path: "/products",
+        element: <DashboardLayout />,
+        children: [
+            { path: "", element: <ProductsList /> }
+        ],
+    },
+
+
 
   { path: "*", element: <NotFound /> }, // 404 Page
 ]);
