@@ -5,6 +5,8 @@ import Home from "../pages/Home";
 import NotFound from "../pages/PageNotFound"
 import Navbar from "../components/Navbar";
 import MainLayout from "../layouts/MainLayout";
+import Login from "../pages/Login";
+import Register from "../pages/Register"
 
 
 
@@ -33,6 +35,14 @@ const AppRoutes = createBrowserRouter([
         ],
     },
 
+    {
+        path: "/login",
+        element: <Login />
+    },
+    {
+        path: "/register",
+        element: <Register />
+    },
 
 
     { path: "*", element: <NotFound /> }, // 404 Page
