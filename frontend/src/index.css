@@ -11,6 +11,6 @@ body{
   
 }
 
-input{
+input, textarea, select{
   @apply outline-none border rounded p-2
 }

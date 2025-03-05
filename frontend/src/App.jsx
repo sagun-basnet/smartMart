@@ -5,10 +5,12 @@ import Footer from "./components/Footer";
 
 const App = () => {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <RouterProvider router={AppRoutes} />
-      <Footer />
-    </div>
+    <RouterProvider router={AppRoutes}>
+      <div className="min-h-screen bg-gray-100">
+        <RouterProvider router={AppRoutes} />
+        <Footer />
+      </div>
+    </RouterProvider>
   );
 };
 
