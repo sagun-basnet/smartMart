@@ -1,21 +1,53 @@
-import React from "react";
+import React, { useState } from "react";
 import image from "../assets/images/loginBg.jpg";
 import { FaArrowLeft } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { post } from "../utils/api";
 
 const Login = () => {
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Form Submitted ", formData);
+    const res = await post("/api/login", formData);
+    console.log(res);
+
+    setFormData({
+      email: "",
+      password: "",
+    });
+    toast.success(res.message);
+    navigate("/");
+  };
+
   return (
     <div className="h-screen flex justify-center items-center px-4">
       <div className="w-full max-w-4xl h-auto md:h-[70vh] flex flex-col md:flex-row shadow-lg">
         {/* Right Side - Form Section */}
         <div className="my-bg w-full md:w-1/2 h-auto md:h-full p-6 flex items-center rounded-l-lg">
-          <form action="" className="w-full grid gap-4">
+          <form onSubmit={handleSubmit} action="" className="w-full grid gap-4">
             <h2 className="text-center text-xl md:text-2xl font-bold">
               Sign In
             </h2>
             <div className="flex flex-col">
               <label htmlFor="email">Email:</label>
               <input
+                value={formData.email}
+                onChange={handleChange}
                 type="email"
                 id="email"
                 name="email"
@@ -25,6 +57,8 @@ const Login = () => {
             <div className="flex flex-col">
               <label htmlFor="password">Password:</label>
               <input
+                value={formData.password}
+                onChange={handleChange}
                 type="password"
                 id="password"
                 name="password"

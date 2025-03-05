@@ -57,7 +57,7 @@ export const login = (req, res) => {
         sameSite: "strict",
       })
       .status(200)
-      .json({ others, token });
+      .json({ message: "Login Successfully.", others, token });
   });
 };
 

@@ -4,6 +4,7 @@ import "dotenv/config";
 
 //routers imports:
 import authRoute from "./router/authRoute.js";
+import productRoute from "./router/productRoute.js";
 
 const port = process.env.PORT;
 const app = express();
@@ -20,6 +21,7 @@ app.use(
 
 //Routes:
 app.use("/api", authRoute);
+app.use("/api", productRoute);
 
 app.listen(port, () => {
   console.log(`listening on ${port}`);
