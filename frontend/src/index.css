@@ -5,7 +5,10 @@
 }
 
 body{
-  @apply bg-[#1a1a1a] text-[#fbfeeb]
+  /* @apply bg-[#1a1a1a] text-[#fbfeeb] */
+  @apply flex flex-col p-4 
+  
+  
 }
 
 input{

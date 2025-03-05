@@ -1,35 +1,17 @@
-import React from "react";
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import AddProduct from "./pages/AddProduct";
+import { RouterProvider } from "react-router-dom";
+import AppRoutes from "./router/routes";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+
 
 const App = () => {
-  const Layout = () => {
-    return <Outlet />;
-  };
-  const router = new createBrowserRouter([
-    {
-      path: "/",
-      element: <Layout />,
-    },
-    {
-      path: "/login",
-      element: <Login />,
-    },
-    {
-      path: "/register",
-      element: <Register />,
-    },
-    {
-      path: "/add-product",
-      element: <AddProduct />,
-    },
-  ]);
   return (
-    <>
-      <RouterProvider router={router} />
-    </>
+
+    <div className="min-h-screen bg-gray-100">
+      
+      <RouterProvider router={AppRoutes} />
+      <Footer />
+    </div>
   );
 };
 
