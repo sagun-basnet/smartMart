@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+.my-bg{
+  @apply bg-[#232323]
+}
+
+body{
+  @apply bg-[#1a1a1a] text-[#fbfeeb]
+}
+
+input{
+  @apply outline-none border rounded p-2
+}
