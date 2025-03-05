@@ -3,6 +3,8 @@ import bgImage from "../assets/images/registerBg.jpg";
 import { FaArrowRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { post } from "../utils/api";
+import { toast } from "react-toastify";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -13,6 +15,7 @@ const Register = () => {
     password: "",
     phone: "",
     address: "",
+    role_id: 2,
   });
 
   const handleChange = (e) => {
@@ -22,9 +25,12 @@ const Register = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form Submitted ", formData);
+    const res = await post("/api/register", formData);
+    console.log(res);
+
     setFormData({
       name: "",
       email: "",
@@ -32,6 +38,7 @@ const Register = () => {
       phone: "",
       address: "",
     });
+    toast.success(res.message);
     navigate("/login");
   };
 

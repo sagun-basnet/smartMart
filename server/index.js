@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 
+//routers imports:
+import authRoute from "./router/authRoute.js";
+
 const port = process.env.PORT;
 const app = express();
 app.use(express.json());
@@ -15,9 +18,9 @@ app.use(
   })
 );
 
+//Routes:
+app.use("/api", authRoute);
+
 app.listen(port, () => {
   console.log(`listening on ${port}`);
 });
-
-
-
