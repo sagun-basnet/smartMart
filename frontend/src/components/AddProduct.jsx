@@ -103,9 +103,7 @@ const AddProduct = () => {
   return (
     <div className="min-h-screen flex justify-center items-center px-4">
       <div className="w-full max-w-3xl p-6 shadow-lg rounded-lg">
-        <h1 className="text-3xl text-center text-[#fbfeeb] font-bold mb-6">
-          Add Products
-        </h1>
+        <h1 className="text-4xl text-center  font-bold mb-6">Add Products</h1>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-2">
           <div>
             <label htmlFor="pname">Product Name:</label>

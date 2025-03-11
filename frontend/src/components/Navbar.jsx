@@ -46,14 +46,15 @@ const Navbar = () => {
             </div>
 
             {/* User and Cart Icons */}
-            <div className="flex items-center space-x-4">
-                <Link to="/Login" className="flex items-center hover:underline">
+            <div className="flex items-center space-x-4 gap-4">
+                <Link to="/Login" className="flex items-center bg-blue-500 p-2 px-4 rounded-md hover:underline">
                     <i className="fa-regular fa-user text-lg mr-2"></i>
-                    <p className="hidden md:block">Login/Register</p>
+                    <p className="hidden md:block">Login</p>
                 </Link>
 
-                <Link to="/cart" className="text-2xl text-gray-800">
+                <Link to="/cart" className="justify-center items-center text-2xl flex flex-col text-gray-800">
                     <i className="fa-solid fa-bag-shopping"></i>
+                    <p className="text-[1.2rem]">cart</p>
                 </Link>
 
                 {/* Dashboard Button */}
