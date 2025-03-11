@@ -46,10 +46,10 @@ const Register = () => {
     <div className="h-screen flex justify-center items-center px-4">
       <div className="w-full max-w-4xl h-auto md:h-[70vh] flex flex-col md:flex-row shadow-lg">
         {/* Left Side - Bg Image Section */}
-        <div className="relative w-full md:w-1/2 h-[40vh] md:h-full flex flex-col items-center justify-center p-6">
+        <div className="relative w-full md:w-1/2 h-[40vh] md:h-full flex flex-col items-center justify-center p-6 bg-black text-white">
           <div
             style={{ backgroundImage: `url(${bgImage})` }}
-            className="absolute inset-0 bg-cover bg-center opacity-40 rounded-l-lg"
+            className="absolute inset-0 bg-cover bg-center opacity-100 rounded-l-lg"
           ></div>
           <div className="relative z-10 text-center md:text-left">
             <h1 className="text-2xl md:text-4xl font-bold">Sign Up Page</h1>
@@ -67,7 +67,7 @@ const Register = () => {
           </div>
         </div>
         {/* Right Side - Form Section */}
-        <div className="my-bg w-full md:w-1/2 h-auto md:h-full p-6 flex items-center rounded-r-lg">
+        <div className=" w-full md:w-1/2 h-auto md:h-full p-6 flex items-center rounded-r-lg">
           <form action="" onSubmit={handleSubmit} className="w-full grid gap-4">
             <h2 className="text-center text-xl md:text-2xl font-bold">
               Sign Up
