@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import img1 from "../assets/images/img1.jpg";
+import { BiSolidCartAdd } from "react-icons/bi";
 
 const Home = () => {
   const [products, setProduct] = useState([]);
@@ -183,7 +184,7 @@ const Home = () => {
             className="shadow-2xl shadow-gray-300 bg-gray-50 text-center rounded-2xl transition-transform duration-300 ease-in-out transform hover:scale-105 p-4"
           >
             {/* Image */}
-            <div className="h-36 md:h-44 border-2 border-gray-500 rounded-2xl">
+            <div className="h-36 md:h-44 rounded-2xl">
               <img
                 src={product.image}
                 alt={product.name}
@@ -192,54 +193,63 @@ const Home = () => {
             </div>
 
             {/* Product Details */}
-            <div className="h-20 mt-2 border-2 border-amber-100 rounded-lg p-2 flex flex-col justify-center">
-              <h1 className="font-bold">{product.name}</h1>
+            <div className="h-20 mt-2  rounded-lg p-2 flex flex-col justify-center">
+              <div className=" w-full h-full overflow-hidden">
+                <h1 className="font-bold">{product.name}</h1>
+
+              </div>
 
               <div className="flex items-center justify-between mt-2">
                 <p className="text-gray-700 font-semibold">
                   Price: {product.price}
-                </p>
-                <button className="bg-[#1f385c] text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-all">
-                  Add to Cart
-                </button>
+                </p><div>
+                  <button className="bg-[#1f385c] text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-all ">
+                    <BiSolidCartAdd className=" text-2xl" /> </button>
+                </div>
+
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Hot Items */}
+      {/* Hot Items*/}
       <div>
-        <h1 className="text-gray-800 font-extrabold text-2xl md:text-4xl">
+        <h1 className="font-extrabold text-2xl md:text-4xl text-gray-900">
           Hot Items
         </h1>
       </div>
-      <div className="flex flex-col md:flex-row gap-4 mb-12">
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-12">
         {hotItem.map((product, index) => (
           <div
             key={index}
-            className="   shadow-2xl shadow-gray-300 bg-gray-50 text-center rounded-2xl transition-transform duration-300 ease-in-out transform hover:scale-105 p-4"
+            className="shadow-2xl shadow-gray-300 bg-gray-50 text-center rounded-2xl transition-transform duration-300 ease-in-out transform hover:scale-105 p-4"
           >
             {/* Image */}
-            <div className="h-36 md:h-44 border-2 border-gray-500 rounded-2xl">
+            <div className="h-36 md:h-44 rounded-2xl">
               <img
-                src={product.image || img1}
+                src={product.image}
                 alt={product.name}
                 className="w-full h-full object-cover rounded-2xl"
               />
             </div>
 
             {/* Product Details */}
-            <div className="h-20 mt-2 border-2 border-amber-100 rounded-lg p-2 flex flex-col justify-center">
-              <h1 className="font-bold">{product.name}</h1>
+            <div className="h-20 mt-2  rounded-lg p-2 flex flex-col justify-center">
+              <div className=" w-full h-full overflow-hidden">
+                <h1 className="font-bold">{product.name}</h1>
+
+              </div>
 
               <div className="flex items-center justify-between mt-2">
                 <p className="text-gray-700 font-semibold">
                   Price: {product.price}
-                </p>
-                <button className="bg-[#1f385c] text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-all">
-                  Add to Cart
-                </button>
+                </p><div>
+                  <button className="bg-[#1f385c] text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-all ">
+                    <BiSolidCartAdd className=" text-2xl" /> </button>
+                </div>
+
               </div>
             </div>
           </div>
@@ -261,25 +271,29 @@ const Home = () => {
             className="shadow-2xl shadow-gray-300 bg-gray-50 text-center rounded-2xl transition-transform duration-300 ease-in-out transform hover:scale-105 p-4"
           >
             {/* Image */}
-            <div className="h-36 md:h-44 border-2 border-gray-500 rounded-2xl">
+            <div className="h-36 md:h-44 rounded-2xl">
               <img
-                src={product.image || img1}
+                src={product.image}
                 alt={product.name}
                 className="w-full h-full object-cover rounded-2xl"
               />
             </div>
 
             {/* Product Details */}
-            <div className="h-20 mt-2 border-2 border-amber-100 rounded-lg p-2 flex flex-col justify-center">
-              <h1 className="font-bold">{product.name}</h1>
+            <div className="h-20 mt-2  rounded-lg p-2 flex flex-col justify-center">
+              <div className=" w-full  overflow-hidden ">
+                <h1 className="font-bold">{product.name}</h1>
+
+              </div>
 
               <div className="flex items-center justify-between mt-2">
                 <p className="text-gray-700 font-semibold">
                   Price: {product.price}
-                </p>
-                <button className="bg-[#1f385c] text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-all">
-                  Add to Cart
-                </button>
+                </p><div>
+                  <button className="bg-[#1f385c] text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-all ">
+                    <BiSolidCartAdd className=" text-2xl" /> </button>
+                </div>
+
               </div>
             </div>
           </div>
