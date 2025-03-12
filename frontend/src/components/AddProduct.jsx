@@ -94,6 +94,7 @@ const AddProduct = () => {
         discount: "",
         stock: "",
       });
+      setImages([]);
     } catch (error) {
       console.error("Error uploading product:", error);
       toast.error("Something went wrong!");

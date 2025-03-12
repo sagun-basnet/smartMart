@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import image from "../assets/images/loginBg.jpg";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { post } from "../utils/api";
+import { AuthContext } from "../context/authContext";
 
 const Login = () => {
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -23,7 +25,8 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form Submitted ", formData);
-    const res = await post("/api/login", formData);
+    // const res = await post("/api/login", formData);
+    const res = await login(formData);
     console.log(res);
 
     setFormData({
