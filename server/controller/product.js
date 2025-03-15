@@ -82,10 +82,18 @@ export const getProduct = (req, res) => {
 };
 
 export const getProductByCategory = (req, res) => {
-  const { category } = req.body;
+  const { category } = req.query;
   console.log(category, ":Category");
 
-  const q = `select * from product where category = '${category}' `;
+  const q = `SELECT 
+      p.*,
+      GROUP_CONCAT(i.image) AS images
+  FROM 
+      product p
+  LEFT JOIN 
+      image i ON p.pid = i.pid where category = '${category}'
+  GROUP BY 
+      p.pid;  `;
   db.query(q, (err, results) => {
     if (err) return res.status(500).send(err);
     return res.status(200).send(results);

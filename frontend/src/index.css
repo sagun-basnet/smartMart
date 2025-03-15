@@ -1,6 +1,6 @@
 @import "tailwindcss";
 *{
-  @apply list-none
+  @apply list-none transition-all
 }
 li{
   @apply cursor-pointer text-lg

@@ -15,13 +15,13 @@ const Card = ({ data }) => {
         <div className="h-[17rem]">
           <img
             className="w-full h-full rounded-t-lg"
-            src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            src={`http://localhost:5555${beforeComma}`}
             alt=""
           />
         </div>
         <div className="flex w-full flex-col gap-4 p-4 absolute bottom-0 h-[14rem] bg-white rounded-t-4xl">
           <h2 className="text-3xl font-bold text-center">{data.title}</h2>
-          <p className="text-justify">{data.description}</p>
+          <p className="text-justify">{data.description.slice(0, 100)+"..."}</p>
           <div className="flex justify-between">
             <div className="flex flex-col">
               <span className="line-through">Rs. {data.price}</span>
