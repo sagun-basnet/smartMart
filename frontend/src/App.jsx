@@ -1,16 +1,16 @@
 import { RouterProvider } from "react-router-dom";
 import AppRoutes from "./router/routes";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
+
+import { CartProvider } from "./context/CartContext";
 
 const App = () => {
   return (
-    <RouterProvider router={AppRoutes}>
-      <div className="min-h-screen bg-gray-100">
+    <CartProvider>
+      <div className="min-h-screen ">
         <RouterProvider router={AppRoutes} />
-        <Footer />
+      
       </div>
-    </RouterProvider>
+    </CartProvider>
   );
 };
 

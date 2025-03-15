@@ -4,7 +4,7 @@ import logo1 from "../assets/images/logo.png";
 
 const Navbar = () => {
     return (
-        <nav className="h-25 px-6 md:px-12 flex justify-between items-center w-full bg-white ">
+        <nav className=" fixed top-0 z-10  h-25 px-6 md:px-12  mb-10 flex justify-between items-center w-full bg-white ">
             {/* Logo */}
             <div>
                 <img src={logo1} alt="Logo" className="h-16 w-16" />
@@ -12,12 +12,12 @@ const Navbar = () => {
 
             {/* Navigation Links - Hidden on mobile, flex on larger screens */}
             <div className="hidden md:flex items-center space-x-6">
-                <Link to="/" className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-900 after:transition-all after:duration-300 hover:after:w-full">
+                <Link to="/" className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-900 after:transition-all after:duration-300 hover:after:w-full font-semibold">
                     Home
                 </Link>
 
                 <div className="relative">
-                    <select className="bg-transparent border-none text-gray-700 focus:outline-none">
+                    <select className="bg-transparent border-none text-gray-700 focus:outline-none font-semibold">
                         <option value="" disabled className="text-center">Categories</option>
                         <option value="new-arrivals " className="text-center">New Arrivals</option>
                         <option value="best-sellers" className="text-center">Best Sellers</option>
@@ -25,36 +25,37 @@ const Navbar = () => {
                     </select>
                 </div>
 
-                <Link to="/shop" className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-900 after:transition-all after:duration-300 hover:after:w-full">
+                <Link to="/shop" className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-900 after:transition-all after:duration-300 hover:after:w-full font-semibold">
                     Shop
                 </Link>
-                <Link to="/blog" className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-900 after:transition-all after:duration-300 hover:after:w-full">
+                <Link to="/blog" className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-900 after:transition-all after:duration-300 hover:after:w-full font-semibold">
                     Blog
                 </Link>
-                <Link to="/contact" className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-900 after:transition-all after:duration-300 hover:after:w-full">
+                <Link to="/contact" className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-900 after:transition-all after:duration-300 hover:after:w-full font-semibold">
                     Contact
                 </Link>
             </div>
 
             {/* Search Input */}
-            <div className="hidden md:flex items-center rounded-2xl">
+            <div className="hidden md:flex items-center p-2">
                 <input
                     type="search"
                     placeholder="Search..."
-                    className="h-10 w-40 md:w-70 border-2 border-gray-300 rounded-lg px-4 focus:outline-none"
+                    className="h-10 w-40 md:w-70 border-2 border-gray-300 px-4 focus:outline-none "
                 />
             </div>
 
+
             {/* User and Cart Icons */}
             <div className="flex items-center space-x-4 gap-4">
-                <Link to="/Login" className="flex items-center bg-blue-500 p-2 px-4 rounded-md hover:underline">
-                    <i className="fa-regular fa-user text-lg mr-2"></i>
-                    <p className="hidden md:block">Login</p>
+                <Link to="/Login" className="flex items-center bg-blue-950 p-2 px-4 rounded-4xl h-9  shadow-2xl hover:bg-blue-900">
+                    <i className="fa-regular fa-user text-lg mr-2 text-white font-medium"></i>
+                    <p className="hidden md:block text-white">Login</p>
                 </Link>
 
-                <Link to="/cart" className="justify-center items-center text-2xl flex flex-col text-gray-800">
-                    <i className="fa-solid fa-bag-shopping"></i>
-                    <p className="text-[1.2rem]">cart</p>
+                <Link to="/shoppingCart" className="justify-center items-center text-xl flex flex-col text-gray-700">
+                    <i className="fa-solid fa-bag-shopping "></i>
+                    <p className="text-[1.2rem] ">cart</p>
                 </Link>
 
                 {/* Dashboard Button */}
