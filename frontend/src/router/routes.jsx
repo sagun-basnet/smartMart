@@ -10,6 +10,7 @@ import Register from "../pages/Register";
 
 import AddProduct from "../components/AddProduct";
 import SingleProduct from "../components/SingleProduct";
+import ShoppingCart from "../components/ShoppingCart";
 
 const AppRoutes = createBrowserRouter([
   {
@@ -20,6 +21,7 @@ const AppRoutes = createBrowserRouter([
         path: "/",
         element: <Home />,
       },
+      { path: "/shoppingCart", element: <ShoppingCart /> }, // ShoppingCart route
     ],
   },
   {
@@ -67,7 +69,7 @@ const AppRoutes = createBrowserRouter([
     element: <AddProduct />,
   },
   {
-    path: "/single-product",
+    path: "/products/:id",
     element: <SingleProduct />,
   },
 

@@ -23,6 +23,8 @@ app.use(
 app.use("/api", authRoute);
 app.use("/api", productRoute);
 
+app.use(express.static("public"));
+
 app.listen(port, () => {
   console.log(`listening on ${port}`);
 });

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import logo1 from "../assets/images/logo.png";
 import { AuthContext } from "../context/authContext";
 import { post } from "../utils/api";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
   const { currentUser, logout } = useContext(AuthContext);
@@ -94,7 +95,7 @@ const Navbar = () => {
         )}
         {currentUser ? (
           <Link
-            to="/cart"
+            to="/shoppingCart"
             className="justify-center items-center text-2xl flex flex-col text-gray-800"
           >
             <i className="fa-solid fa-bag-shopping"></i>
@@ -103,6 +104,7 @@ const Navbar = () => {
         ) : (
           <Link
             to="/login"
+            onClick={() => toast.error("Login to see cart..")}
             className="justify-center items-center text-2xl flex flex-col text-gray-800"
           >
             <i className="fa-solid fa-bag-shopping"></i>
