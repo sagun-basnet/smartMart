@@ -1,4 +1,10 @@
 @import "tailwindcss";
+*{
+  @apply list-none
+}
+li{
+  @apply cursor-pointer text-lg
+}
 .my-bg{
   @apply bg-[#232323]
 }

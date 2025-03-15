@@ -11,6 +11,12 @@ import Register from "../pages/Register";
 import AddProduct from "../components/AddProduct";
 import SingleProduct from "../components/SingleProduct";
 import ShoppingCart from "../components/ShoppingCart";
+import Shop from "../components/shop/Shop";
+import AllProduct from "../components/shop/AllProduct";
+import Clothes from "../components/shop/category/Clothes";
+import Watches from "../components/shop/category/Watches";
+import Electronics from "../components/shop/category/Electronics";
+import Groceries from "../components/shop/category/Groceries";
 
 const AppRoutes = createBrowserRouter([
   {
@@ -21,7 +27,18 @@ const AppRoutes = createBrowserRouter([
         path: "/",
         element: <Home />,
       },
-      { path: "/shoppingCart", element: <ShoppingCart /> }, // ShoppingCart route
+      { path: "/shoppingCart", element: <ShoppingCart /> },
+      {
+        path: "/shop",
+        element: <Shop />,
+        children: [
+          { path: "/shop", element: <AllProduct /> },
+          { path: "/shop/Clothes", element: <Clothes /> },
+          { path: "/shop/Watches", element: <Watches /> },
+          { path: "/shop/Electronics", element: <Electronics /> },
+          { path: "/shop/Groceries", element: <Groceries /> },
+        ],
+      },
     ],
   },
   {

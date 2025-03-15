@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import logo1 from "../assets/images/logo.png";
 import { AuthContext } from "../context/authContext";
+import { MdDashboard } from "react-icons/md";
 import { post } from "../utils/api";
 import { toast } from "react-toastify";
 
@@ -113,10 +114,10 @@ const Navbar = () => {
         )}
 
         {/* Dashboard Button */}
-        {currentUser && (
+        {currentUser?.role_id === 1 && (
           <Link to="/dashboard">
-            <button className="bg-blue-600 text-white h-10 w-10 rounded-full text-sm hover:bg-blue-800 transition duration-300">
-              D
+            <button className="cursor-pointer bg-blue-600 text-white h-10 w-10 rounded-full text-sm hover:bg-blue-800 transition duration-300 flex justify-center items-center">
+              <MdDashboard className="text-xl" />
             </button>
           </Link>
         )}
