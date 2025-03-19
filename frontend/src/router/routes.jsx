@@ -96,7 +96,7 @@ const AppRoutes = createBrowserRouter([
     element: <Checkout />,
   },
   {
-    path: "/finished/:id",
+    path: "/finished/:pid",
     element: <Finished />,
   },
 

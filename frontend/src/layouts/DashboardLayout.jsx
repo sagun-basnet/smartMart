@@ -6,9 +6,9 @@ const DashboardLayout = () => {
   return (
     <div className="flex h-screen ">
       <D_Sidebar />
-      <div className="flex flex-col flex-1 ">
+      <div className=" flex flex-col flex-1 ">
         <D_Navbar />
-        <div className="p-6 bg-gray-100">
+        <div className="p-6 mt-16 w-[calc(100%-16rem)] ml-64 bg-gray-100">
           <Outlet />
         </div>
       </div>

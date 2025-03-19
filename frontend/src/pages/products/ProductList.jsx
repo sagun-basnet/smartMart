@@ -52,7 +52,7 @@ const ProductsList = () => {
           {products.map((product) => (
             <tr key={product.id} className="border-b text-center">
               <td className="p-3">{product.title}</td>
-              <td className="p-3">{product.description}</td>
+              <td className="p-3">{(product.description).slice(0,20)+"..."}</td>
               <td className="p-3">{product.category}</td>
               <td className="p-3 flex gap-2">
                 {/* Display images */}

@@ -121,7 +121,7 @@ const Checkout = () => {
               <div className=" detail font-bold text-lg flex justify-between w-[100%] p-2">
                 <div className="flex flex-col">
                   {" "}
-                  Package name: &nbsp;
+                  Package: &nbsp;
                   <span className=" text-blue-500"> {products[0]?.title}</span>
                 </div>
                 <span className="font-bold text-lg">
@@ -139,11 +139,11 @@ const Checkout = () => {
             </span>
             <span className=" w-[70%] flex justify-between">
               <span>Extra Charge</span>
-              <span>{products[0]?.discount}%</span>
+              <span>-</span>
             </span>
             <span className=" w-[70%] flex justify-between">
               <span>Discound percent</span>
-              <span>-</span>
+              <span>{products[0]?.discount}%</span>
             </span>
             <span className=" w-[70%] font-bold flex justify-between">
               <span>Total Due</span>

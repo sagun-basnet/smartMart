@@ -3,7 +3,7 @@ import { HomeIcon, ShoppingBagIcon, PlusCircleIcon } from "@heroicons/react/outl
 
 const Sidebar = () => {
     return (
-        <div className="w-64 bg-gray-800 text-white h-full p-5">
+        <div className="w-64 bg-gray-800 text-white h-full fixed left-0 top-0 p-5">
             <h2 className="text-2xl font-bold mb-6">Admin Panel</h2>
             <nav>
                 <Link to="/" className="flex items-center mb-4 hover:text-gray-400">

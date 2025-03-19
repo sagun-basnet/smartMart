@@ -10,7 +10,7 @@ li {
 }
 body {
   /* @apply bg-[#1a1a1a] text-[#fbfeeb] */
-  @apply flex flex-col p-4;
+  @apply flex flex-col;
 }
 input,
 textarea,
