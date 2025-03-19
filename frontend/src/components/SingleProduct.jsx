@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FaRegCreditCard } from "react-icons/fa6";
 import { FaCartArrowDown } from "react-icons/fa6";
 import { get } from "../utils/api";
+import { BiSolidCartAdd } from "react-icons/bi";
+import { AuthContext } from "../context/authContext";
+import { toast } from "react-toastify";
 const SingleProduct = () => {
-  const navigate = useNavigate();
+  const { currentUser } = useContext(AuthContext);
   const { id } = useParams();
+  const [relatedProducts, setRelatedProducts] = useState([]);
   const [product, setProduct] = useState(null);
-  console.log(product, " :Product");
+  // console.log(product, " :Product");
 
   // const mockData = [
   //   {
@@ -167,16 +171,40 @@ const SingleProduct = () => {
   const fetchData = async () => {
     const res = await get(`/api/get-products-by-id/${parseInt(id)}`);
 
-    console.log(res, ":RES");
+    // console.log(res, ":RES");
     if (res.length > 0 && res[0].images) {
       res[0].images = res[0].images.split(","); // Convert string to array
     }
-    console.log(res[0]?.images, " :res");
-    setProduct(res);
+    console.log(res[0]?.images, " :images");
+    setProduct(res[0]);
+  };
+  const fetchAllProduct = async () => {
+    if (!product?.category) return;
+    const res = await get(
+      `/api/get-products-by-category?category=${product.category}`
+    );
+    console.log(res, ":RES");
+
+    for (let i = 0; i < res.length; i++) {
+      console.log(res[i].images);
+      if (res[i].images) {
+        res[i].images = res[i].images.split(","); // Convert string to array
+      }
+    }
+    // if (res.length > 0) {
+    // }
+    setRelatedProducts(res);
   };
 
   useEffect(() => {
+    if (product?.category) {
+      fetchAllProduct();
+    }
+  }, [product?.category]);
+
+  useEffect(() => {
     fetchData();
+
     // const selectedProduct = mockData.find((item) => item.id === parseInt(id));
     // setProduct(selectedProduct);
   }, [id]);
@@ -190,52 +218,140 @@ const SingleProduct = () => {
   }
 
   const discountedPrice = (
-    product[0].price *
-    (1 - product[0].discount / 100)
+    product?.price *
+    (1 - product?.discount / 100)
   ).toFixed(2);
 
+  console.log(relatedProducts, ":RELATED");
+
   return (
-    <div className="bg-gray-100 min-h-screen flex items-center justify-center px-4 py-10">
-      <div className="container mx-auto bg-white rounded-2xl shadow-lg overflow-hidden p-6 md:p-10 flex flex-col md:flex-row gap-10 max-w-4xl">
+    <div className="bg-gray-100 min-h-screen flex  flex-col items-center justify-center px-4 py-10">
+      <div className="container mx-auto bg-white rounded-2xl shadow-lg overflow-hidden p-6 md:p-10 flex flex-col md:flex-row gap-10 max-w-4xl h-[60vh]">
         <div className="w-full md:w-1/2 flex justify-center ">
           <img
-            src={`http://localhost:5555/${product[0]?.images[0]}`}
-            alt={product[0].name}
+            src={`http://localhost:5555/${product?.images[0]}`}
+            alt={product.name}
             className="w-full h-auto rounded-xl shadow-md transition-transform transform hover:scale-105"
           />
         </div>
 
         <div className="w-full md:w-1/2 flex flex-col justify-center">
           <h1 className="text-3xl font-extrabold text-gray-800 mb-4">
-            {product[0].name}
+            {product.title}
           </h1>
+          {/* Quantity Controls */}
+          <div className="flex items-center">
+            <button className="bg-gray-300 text-black px-2 py-1 rounded-l">
+              -
+            </button>
+            <span className="px-3">{""}</span>
+            <button className="bg-gray-300 text-black px-2 py-1 rounded-r">
+              +
+            </button>
+          </div>
           <p className="text-gray-500 text-lg mb-2 font-medium">
-            Category:{" "}
-            <span className="text-gray-700">{product[0].category}</span>
+            <span className="text-gray-700">{product.description}</span>
           </p>
-          <p className="text-gray-600 text-lg mb-6 leading-relaxed">
-            {product[0].description}
-          </p>
-          <p className="text-xl font-semibold text-gray-700 ">
-            Original Price:{" "}
-            <span className="line-through">Rs. {product[0].price}</span>
-          </p>
-          <p className="text-2xl font-bold text-green-600">
-            Rs. {discountedPrice} ({product[0].discount}% OFF)
+
+          {discountedPrice > 0 && (
+            <p className="text-xl font-bold text-gray-700 ">
+              Price:{" "}
+              <span className="line-through text-red-500 font-semibold text-md">
+                {" "}
+                {Math.round(product.price)}{" "}
+              </span>
+              <span className="ml-4">-{Math.round(product.discount)}%</span>
+            </p>
+          )}
+
+          <p className="text-lg font-bold text-green-600">
+            Rs:{" "}
+            {discountedPrice > 0
+              ? Math.round(discountedPrice)
+              : Math.round(price.toFixed(2))}
           </p>
 
           <div className="flex justify-between">
-            <button
-              onClick={() => navigate(`/product/checkout/${product[0].pid}`)}
-              className="cursor-pointer mt-6 bg-[#1f385c] text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-all shadow-md text-lg font-medium transform hover:scale-105 flex gap-2 items-center"
-            >
-              <FaRegCreditCard /> Buy
-            </button>
+            {currentUser ? (
+              <Link to={`/product/checkout/${product.pid}`}>
+                <button className="cursor-pointer mt-6 bg-[#1f385c] text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-all shadow-md text-lg font-medium transform hover:scale-105 flex gap-2 items-center">
+                  <FaRegCreditCard /> Buy
+                </button>
+              </Link>
+            ) : (
+              <Link to={`/login`}>
+                <button
+                  onClick={() => toast.error("Please Login First..")}
+                  className="cursor-pointer mt-6 bg-[#1f385c] text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-all shadow-md text-lg font-medium transform hover:scale-105 flex gap-2 items-center"
+                >
+                  <FaRegCreditCard /> Buy
+                </button>
+              </Link>
+            )}
             <button className="cursor-pointer mt-6 bg-transparent border-2 border-[#1f385c]  text-[#1f385c] px-6 py-3 rounded-lg transition-all shadow-md text-lg font-medium transform hover:scale-105 flex gap-2 items-center">
               <FaCartArrowDown /> Add to Cart
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Related Products Section */}
+
+      <div className="mt-10 w-full flex justify-center flex-col items-center">
+        <h1 className="text-5xl font-bold">Related Products</h1>
+        {relatedProducts.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+            {relatedProducts.slice(0, 4).map(
+              (item, index) =>
+                item.pid !== product.pid && (
+                  <Link key={index} to={`/products/${item.pid}`}>
+                    <div
+                      key={index}
+                      className="shadow-2xl shadow-gray-300 bg-gray-50 text-center rounded-2xl transition-transform duration-300 ease-in-out transform hover:scale-105 p-4 w-64"
+                    >
+                      {/* Image */}
+                      <div className="h-36 md:h-44 w-full rounded-2xl">
+                        <img
+                          src={
+                            item.images !== null
+                              ? `http://localhost:5555/${item?.images[0]}`
+                              : "hgj"
+                          }
+                          alt={item.title}
+                          className="w-full h-full object-cover rounded-2xl"
+                        />
+                      </div>
+
+                      {/* Product Details */}
+                      <div className="h-20 mt-2  rounded-lg p-2 flex flex-col justify-center">
+                        <div className=" w-full h-full overflow-hidden">
+                          <h1 className="font-bold">{item.title}</h1>
+                        </div>
+
+                        <div className="flex items-center justify-between mt-2">
+                          <p className="text-gray-700 font-semibold">
+                            Price: {product.price}
+                          </p>
+                          <div>
+                            <button
+                              onClick={() => addToCart(product)}
+                              className="bg-[#1f385c] text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-all "
+                            >
+                              <BiSolidCartAdd className=" text-2xl" />{" "}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                )
+            )}
+          </div>
+        ) : (
+          <h2 className="text-3xl font-bold text-red-500 mt-10">
+            Related Product Not Found
+          </h2>
+        )}
       </div>
     </div>
   );
