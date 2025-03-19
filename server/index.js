@@ -5,6 +5,7 @@ import "dotenv/config";
 //routers imports:
 import authRoute from "./router/authRoute.js";
 import productRoute from "./router/productRoute.js";
+import esewaRoute from "./router/esewaRoute.js";
 
 const port = process.env.PORT;
 const app = express();
@@ -22,6 +23,7 @@ app.use(
 //Routes:
 app.use("/api", authRoute);
 app.use("/api", productRoute);
+app.use("/api", esewaRoute);
 
 app.use(express.static("public"));
 

@@ -12,13 +12,20 @@ export const verifyEsewa = async (req, res) => {
   const esewaSecret = process.env.ESEWASECRET;
   // console.log(esewaSecret);
 
-  axios
-    .get(`http://localhost:5050/api/getSinglePost/${proId}`)
+  await axios
+    .get(`http://localhost:5555/api/get-products-by-id/${proId}`)
     .then((response) => {
-      console.log(response.data, " : Esewa controller response data");
+      // console.log(response.data, " : Esewa controller response data");
       const productData = response.data;
+      console.log(productData, " :Product");
+
+      const discountedPrice = (
+        productData[0].price *
+        (1 - productData[0]?.discount / 100)
+      ).toFixed(2);
+      console.log(discountedPrice, " : Discounted");
       const message = `total_amount=${parseInt(
-        productData.price
+        discountedPrice
       )},transaction_uuid=${uuid},product_code=EPAYTEST`;
 
       const hash = CryptoJS.HmacSHA256(message, esewaSecret);
@@ -39,11 +46,9 @@ export const handleEsewaSuccess = async (req, res) => {
   const { data } = req.query;
   const pid = req.params.pid;
   const uid = req.params.uid;
-  const date = req.params.date;
 
   console.log(pid, ":pid");
   console.log(uid, ":uid");
-  console.log(date, ":date");
 
   let decodedString = atob(data);
   decodedString = JSON.parse(decodedString);
@@ -62,16 +67,15 @@ export const handleEsewaSuccess = async (req, res) => {
         // if (result == false) {
         //   throw "Hash value not matched";
         // }
-        const sql =
-          "INSERT into `bookings`(`user_id`, `package_id`, `date`) value(?,?,?)";
-        db.query(sql, [parseInt(uid), parseInt(pid), date], (err, data) => {
+        const sql = "INSERT into `sales`(`user_id`, `product_id`) value(?,?)";
+        db.query(sql, [parseInt(uid), parseInt(pid)], (err, data) => {
           if (err) {
             console.error("Error inserting order:", err);
             return res.status(500).json({ error: "Failed to create booking." });
           }
           console.log(data.insertId, ":Result");
           db.query(
-            "insert into transactions(`booking_id`, `amount`) values(?,?)",
+            "insert into transactions(`sales_id`, `amount`) values(?,?)",
             [data.insertId, decodedString.total_amount],
             (err, data) => {
               if (err) {
@@ -79,18 +83,6 @@ export const handleEsewaSuccess = async (req, res) => {
                 return res
                   .status(500)
                   .json({ error: "Failed to create Transaction." });
-              }
-            }
-          );
-          db.query(
-            "Update package set `isBooked` = 'Booked' where pid= ?",
-            [pid],
-            (err, data) => {
-              if (err) {
-                console.error("Error updating package:", err);
-                return res
-                  .status(500)
-                  .json({ error: "Failed to update package." });
               }
             }
           );

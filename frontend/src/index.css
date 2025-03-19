@@ -1,21 +1,19 @@
 @import "tailwindcss";
-*{
-  @apply list-none transition-all
+* {
+  @apply list-none transition-all;
 }
-li{
-  @apply cursor-pointer text-lg
+li {
+  @apply cursor-pointer text-lg;
 }
-.my-bg{
-  @apply bg-[#232323]
+.my-bg {
+  @apply bg-[#232323];
 }
-
-body{
+body {
   /* @apply bg-[#1a1a1a] text-[#fbfeeb] */
-  @apply flex flex-col p-4 
-  
-  
+  @apply flex flex-col p-4;
 }
-
-input, textarea, select{
-  @apply outline-none border rounded p-2
+input,
+textarea,
+select {
+  @apply outline-none border rounded p-2;
 }

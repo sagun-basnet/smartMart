@@ -1,17 +1,19 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
-import { AuthContext } from "../../context/authContext";
+import { AuthContext } from "../context/authContext";
 
 import { IoMdArrowRoundBack } from "react-icons/io";
 import axios from "axios";
-import { get } from "../../utils/api";
+import { get } from "../utils/api";
+import { post } from "../utils/api";
 
 const Checkout = () => {
-  const { pid, date } = useParams();
+  const { id } = useParams();
+  // console.log(id, "pid");
 
   const { currentUser } = useContext(AuthContext);
-  console.log(currentUser.id);
+  // console.log(currentUser.id);
 
   const [products, setProducts] = useState([]);
   const [esewa, setEsewa] = useState({});
@@ -25,9 +27,10 @@ const Checkout = () => {
   const loadEsewa = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5050/api/verifyEsewa/${parseInt(pid)}`
+        `http://localhost:5555/api/verifyEsewa/${parseInt(id)}`
       );
       setEsewa(response.data);
+      console.log(response.data, 33);
     } catch (err) {
       console.log(err);
     }
@@ -43,8 +46,8 @@ const Checkout = () => {
 
   const loadData = async () => {
     try {
-      const response = await get(`/api/getSinglePost/${parseInt(pid)}`);
-      // console.log(response.images);
+      const response = await get(`/api/get-products-by-id/${parseInt(id)}`);
+
       setProducts(response);
       setImg(splitImagePaths(response.images)[0]);
     } catch (err) {
@@ -56,6 +59,8 @@ const Checkout = () => {
   useEffect(() => {
     loadData();
   }, []);
+  const str = String(products[0]?.images);
+  const beforeComma = str.slice(0, str.indexOf(","));
 
   const navigation = useNavigate();
 
@@ -82,10 +87,15 @@ const Checkout = () => {
     return formattedNumber.split("").reverse().join("");
   }
 
+  const discountedPrice = (
+    products[0]?.price *
+    (1 - products[0]?.discount / 100)
+  ).toFixed(2);
+
   // const products[0]? = products.find((product) => product.pid === parseInt(pid));
   return (
-    <div className="w-full h-[100vh] my-flex font-heading">
-      <div className="flex w-[70%] h-[80%] relative rounded-xl shadow-2xl border-t-2 border-r-2 border-l-2 p-6">
+    <div className="w-full h-[100vh] flex justify-center items-center font-heading">
+      <div className="flex w-[70%] h-[80%] relative rounded-xl shadow-2xl  p-6">
         <button
           className="absolute top-2 left-2"
           onClick={() => navigation(-1)}
@@ -94,7 +104,7 @@ const Checkout = () => {
         </button>
         <div className="detail w-1/2 h-full p-8 flex flex-col gap-8">
           <div className="userName flex items-center gap-2">
-            <div className="rounded-full w-10 h-10 my-grid text-xl font-bold bg-primary font-heading">
+            <div className="rounded-full w-10 h-10 grid place-items-center text-xl font-bold bg-blue-500 font-heading">
               {currentUser.name.charAt(0).toUpperCase()}
             </div>
             <span className="capitalize font-semibold">{currentUser.name}</span>
@@ -103,43 +113,46 @@ const Checkout = () => {
             <div className="img h-[5rem]">
               <img
                 className="h-full w-full"
-                src={`http://localhost:5050${img}`}
+                src={`http://localhost:5555${beforeComma}`}
                 alt=""
               />
             </div>
             <div className="flex flex-col w-full">
               <div className=" detail font-bold text-lg flex justify-between w-[100%] p-2">
-                <div className="flex">
+                <div className="flex flex-col">
                   {" "}
                   Package name: &nbsp;
-                  <span className=" text-primary"> {products.pname}</span>
+                  <span className=" text-blue-500"> {products[0]?.title}</span>
                 </div>
                 <span className="font-bold text-lg">
-                  Rs.{formatNumberCustom(parseInt(products?.price))}
+                  Rs.{formatNumberCustom(parseInt(products[0]?.price))}
                 </span>
-              </div>
-              <div className="flex px-2 font-bold text-lg">
-                Started From: &nbsp;<span className="text-primary">{date}</span>
               </div>
             </div>
           </div>
           <div className=" flex items-end flex-col">
             <span className=" w-[70%] flex justify-between">
               <span>Subtotal</span>
-              <span>Rs. {formatNumberCustom(parseInt(products?.price))}</span>
+              <span>
+                Rs. {formatNumberCustom(parseInt(products[0]?.price))}
+              </span>
             </span>
             <span className=" w-[70%] flex justify-between">
               <span>Extra Charge</span>
+              <span>{products[0]?.discount}%</span>
+            </span>
+            <span className=" w-[70%] flex justify-between">
+              <span>Discound percent</span>
               <span>-</span>
             </span>
             <span className=" w-[70%] font-bold flex justify-between">
               <span>Total Due</span>
-              <span>Rs. {formatNumberCustom(parseInt(products?.price))}</span>
+              <span>Rs. {formatNumberCustom(parseInt(discountedPrice))}</span>
             </span>
           </div>
         </div>
         <div className="h-full border-2" />
-        <div className="payment w-1/2 h-full flex flex-col justify-center items-center relative p-8 gap-2">
+        <div className="payment  w-1/2 h-full flex flex-col justify-center items-center relative p-8 gap-2">
           <button
             onClick={() => navigation(-1)}
             className="rounded-md p-2 px-6 bg-[#FF0000] hover:bg-red-600 my-transition font-bold absolute bottom-0 right-6 text-white"
@@ -147,7 +160,7 @@ const Checkout = () => {
             Cancel
           </button>
 
-          <h1 className="mb-16 text-6xl font-bold">Payment Option</h1>
+          <h1 className="mb-16 text-5xl font-bold">Payment Option</h1>
           <form
             action="https://rc-epay.esewa.com.np/api/epay/main/v2/form"
             method="POST"
@@ -158,7 +171,7 @@ const Checkout = () => {
               type="text"
               id="amount"
               name="amount"
-              value={parseInt(products?.price)}
+              value={parseInt(discountedPrice)}
               required
             />
             <input
@@ -174,7 +187,7 @@ const Checkout = () => {
               type="text"
               id="total_amount"
               name="total_amount"
-              value={parseInt(products?.price)}
+              value={parseInt(discountedPrice)}
               required
             />
             <input
@@ -214,7 +227,7 @@ const Checkout = () => {
               type="text"
               id="success_url"
               name="success_url"
-              value={`http://localhost:5050/api/success/${pid}/${currentUser.id}/${date}`}
+              value={`http://localhost:5555/api/success/${id}/${currentUser.id}`}
               required
             />
             <input
@@ -241,7 +254,7 @@ const Checkout = () => {
               value={esewa?.signature}
               required
             />
-            <div className="esewa w-full my-grid">
+            <div className="esewa w-full grid place-items-center">
               <button
                 className=" p-2 px-4 w-[60%] rounded-md bg-[#67BD4C] hover:bg-[#6fff43]"
                 type="submit"

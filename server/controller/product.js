@@ -99,3 +99,20 @@ export const getProductByCategory = (req, res) => {
     return res.status(200).send(results);
   });
 };
+
+export const getProductById = (req, res) => {
+  const { id } = req.params;
+  const q = `SELECT 
+      p.*,
+      GROUP_CONCAT(i.image) AS images
+  FROM 
+      product p
+  LEFT JOIN 
+      image i ON p.pid = i.pid where p.pid=?
+  GROUP BY 
+      p.pid;  `;
+  db.query(q, [id], (err, results) => {
+    if (err) return res.status(500).send(err);
+    return res.status(200).send(results);
+  });
+};

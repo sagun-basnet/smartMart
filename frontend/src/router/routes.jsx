@@ -17,6 +17,8 @@ import Clothes from "../components/shop/category/Clothes";
 import Watches from "../components/shop/category/Watches";
 import Electronics from "../components/shop/category/Electronics";
 import Groceries from "../components/shop/category/Groceries";
+import Checkout from "../components/Checkout";
+import Finished from "../components/Finished";
 
 const AppRoutes = createBrowserRouter([
   {
@@ -88,6 +90,14 @@ const AppRoutes = createBrowserRouter([
   {
     path: "/products/:id",
     element: <SingleProduct />,
+  },
+  {
+    path: "/product/checkout/:id",
+    element: <Checkout />,
+  },
+  {
+    path: "/finished/:id",
+    element: <Finished />,
   },
 
   { path: "*", element: <NotFound /> }, // 404 Page
