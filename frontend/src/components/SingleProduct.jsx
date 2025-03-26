@@ -229,7 +229,7 @@ const SingleProduct = () => {
       <div className="container mx-auto bg-white rounded-2xl shadow-lg overflow-hidden p-6 md:p-10 flex flex-col md:flex-row gap-10 max-w-4xl h-[60vh]">
         <div className="w-full md:w-1/2 flex justify-center ">
           <img
-            src={`http://localhost:5555/${product?.images[0]}`}
+            src={`http://localhost:5555${product?.images[0]}`}
             alt={product.name}
             className="w-full h-auto rounded-xl shadow-md transition-transform transform hover:scale-105"
           />
@@ -314,7 +314,7 @@ const SingleProduct = () => {
                         <img
                           src={
                             item.images !== null
-                              ? `http://localhost:5555/${item?.images[0]}`
+                              ? `http://localhost:5555${item?.images[0]}`
                               : "hgj"
                           }
                           alt={item.title}

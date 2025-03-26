@@ -116,3 +116,60 @@ export const getProductById = (req, res) => {
     return res.status(200).send(results);
   });
 };
+
+export const editProduct = (req, res) => {
+  const { id } = req.params;
+  const { title, description, category, price, discount, quantity } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ error: "Product ID is required" });
+  }
+
+  // Update product details in the database
+  const updateSql = `UPDATE product SET title=?, description=?, category=?, price=?, discount=?, quantity=? WHERE pid=?`;
+  const values = [title, description, category, price, discount, quantity, id];
+
+  db.query(updateSql, values, (err, results) => {
+    if (err) {
+      console.error("Error updating product:", err);
+      return res
+        .status(500)
+        .json({ error: "An error occurred", details: err.message });
+    }
+
+    // If images are uploaded, update them
+    if (req.files && req.files.length > 0) {
+      // Delete existing images
+      const deleteImageSql = `DELETE FROM image WHERE pid=?`;
+      db.query(deleteImageSql, [id], (deleteErr) => {
+        if (deleteErr) {
+          console.error("Error deleting old images:", deleteErr);
+          return res.status(500).json({
+            error: "An error occurred while deleting old images",
+            details: deleteErr.message,
+          });
+        }
+
+        // Insert new images
+        const images = req.files.map((image) => [
+          id,
+          `/images/${image.filename}`,
+        ]);
+        const insertImageSql = `INSERT INTO image (pid, image) VALUES ?`;
+        db.query(insertImageSql, [images], (insertErr) => {
+          if (insertErr) {
+            console.error("Error inserting images:", insertErr);
+            return res.status(500).json({
+              error: "An error occurred while inserting images",
+              details: insertErr.message,
+            });
+          }
+
+          res.status(200).json({ message: "Product updated successfully" });
+        });
+      });
+    } else {
+      res.status(200).json({ message: "Product updated successfully" });
+    }
+  });
+};

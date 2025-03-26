@@ -125,6 +125,12 @@ const Home = () => {
   ];
   const fetchData = async () => {
     const res = await get("/api/get-products");
+    for (let i = 0; i < res.length; i++) {
+      // console.log(res[i].images);
+      if (res[i].images) {
+        res[i].images = res[i].images.split(","); // Convert string to array
+      }
+    }
     console.log(res, " :Response");
     setProduct(res);
   };
@@ -209,46 +215,53 @@ const Home = () => {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-12">
-        {products.slice(0, 5).map((product, index) => {
-          return (
-            <Link to={`/products/${product.pid}`}>
-              <div
-                key={index}
-                className="shadow-2xl shadow-gray-300 bg-gray-50 text-center rounded-2xl transition-transform duration-300 ease-in-out transform hover:scale-105 p-4"
-              >
-                {/* Image */}
-                <div className="h-36 md:h-44 rounded-2xl">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover rounded-2xl"
-                  />
-                </div>
-
-                {/* Product Details */}
-                <div className="h-20 mt-2  rounded-lg p-2 flex flex-col justify-center">
-                  <div className=" w-full h-full overflow-hidden">
-                    <h1 className="font-bold">{product.name}</h1>
+        {[...products]
+          .reverse()
+          .slice(0, 5)
+          .map((product, index) => {
+            return (
+              <Link to={`/products/${product.pid}`}>
+                <div
+                  key={index}
+                  className="shadow-2xl shadow-gray-300 bg-gray-50 text-center rounded-2xl transition-transform duration-300 ease-in-out transform hover:scale-105 p-4"
+                >
+                  {/* Image */}
+                  <div className="h-36 md:h-44 rounded-2xl">
+                    <img
+                      src={
+                        product?.images
+                          ? `http://localhost:5555${product.images[0]}`
+                          : `sadgf`
+                      }
+                      alt={product.name}
+                      className="w-full h-full object-cover rounded-2xl"
+                    />
                   </div>
 
-                  <div className="flex items-center justify-between mt-2">
-                    <p className="text-gray-700 font-semibold">
-                      Price: {product.price}
-                    </p>
-                    <div>
-                      <button
-                        onClick={() => addToCart(product)}
-                        className="bg-[#1f385c] text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-all "
-                      >
-                        <BiSolidCartAdd className=" text-2xl" />{" "}
-                      </button>
+                  {/* Product Details */}
+                  <div className="h-20 mt-2  rounded-lg p-2 flex flex-col justify-center">
+                    <div className=" w-full h-full overflow-hidden">
+                      <h1 className="font-bold">{product.title}</h1>
+                    </div>
+
+                    <div className="flex items-center justify-between mt-2">
+                      <p className="text-gray-700 font-semibold">
+                        Price: {product.price}
+                      </p>
+                      <div>
+                        <button
+                          onClick={() => addToCart(product)}
+                          className="bg-[#1f385c] text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-all "
+                        >
+                          <BiSolidCartAdd className=" text-2xl" />{" "}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          );
-        })}
+              </Link>
+            );
+          })}
       </div>
 
       {/* Hot Items*/}

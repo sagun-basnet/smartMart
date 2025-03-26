@@ -5,19 +5,15 @@ import { get } from "../../utils/api.jsx";
 
 const ProductsList = () => {
   const [products, setProducts] = useState([]);
-  const [imageArr, setImageArr] = useState({}); // Store images per product ID
+  const [imageArr, setImageArr] = useState([]); // Store images per product ID
+  console.log(imageArr, 9);
 
   const fetchProducts = async () => {
     const res = await get("/api/get-products");
-    console.log(res, "products");
+    // console.log(res, "products");
     setProducts(res);
 
     // Process images for each product
-    const imagesMap = {};
-    res.forEach((product) => {
-      imagesMap[product.id] = product.images ? product.images.split(",") : [];
-    });
-    setImageArr(imagesMap);
   };
 
   useEffect(() => {
@@ -52,25 +48,28 @@ const ProductsList = () => {
           {products.map((product) => (
             <tr key={product.id} className="border-b text-center">
               <td className="p-3">{product.title}</td>
-              <td className="p-3">{(product.description).slice(0,20)+"..."}</td>
+              <td className="p-3">
+                {product.description.slice(0, 20) + "..."}
+              </td>
               <td className="p-3">{product.category}</td>
               <td className="p-3 flex gap-2">
                 {/* Display images */}
-                {imageArr[product.id]?.map((image, index) => (
-                  <img
-                    key={index}
-                    src={`http://localhost:5555${image.trim()}`} // Trim in case of spaces
-                    alt={`Product ${index}`}
-                    className="w-16 h-16 object-cover rounded-md"
-                  />
-                ))}
+                {product.images &&
+                  product.images.split(",").map((image, index) => (
+                    <img
+                      key={index}
+                      src={`http://localhost:5555${image}`} // Trim in case of spaces
+                      alt={`Product ${index}`}
+                      className="w-16 h-16 object-cover rounded-md"
+                    />
+                  ))}
               </td>
               <td className="p-3">Rs. {product.price}</td>
               <td className="p-3">{product.discount}%</td>
               <td className="p-3">{product.quantity}</td>
               <td className="p-3 flex gap-2 justify-center">
                 <Link
-                  to={`/edit-product/${product.id}`}
+                  to={`/edit-product/${product.pid}`}
                   className="bg-blue-500 p-2 px-4 rounded-md text-white"
                 >
                   Edit

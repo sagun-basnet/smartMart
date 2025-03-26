@@ -19,6 +19,7 @@ import Electronics from "../components/shop/category/Electronics";
 import Groceries from "../components/shop/category/Groceries";
 import Checkout from "../components/Checkout";
 import Finished from "../components/Finished";
+import EditProduct from "../pages/products/EditProduct";
 
 const AppRoutes = createBrowserRouter([
   {
@@ -86,6 +87,10 @@ const AppRoutes = createBrowserRouter([
   {
     path: "/add-product",
     element: <AddProduct />,
+  },
+  {
+    path: "/edit-product/:id",
+    element: <EditProduct />,
   },
   {
     path: "/products/:id",
