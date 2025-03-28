@@ -173,3 +173,39 @@ export const editProduct = (req, res) => {
     }
   });
 };
+export const deletePost = (req, res) => {
+  const { id } = req.params;
+  console.log(id, ":id");
+
+  if (!id) {
+    return res.status(400).json({ error: "Product ID is required" });
+  }
+
+  // First, delete associated images
+  const deleteImagesQuery = `DELETE FROM image WHERE pid = ?`;
+
+  db.query(deleteImagesQuery, [id], (err) => {
+    if (err) {
+      console.error("Error deleting images:", err);
+      return res
+        .status(500)
+        .json({ error: "An error occurred while deleting images" });
+    }
+
+    // Now, delete the product
+    const deleteProductQuery = `DELETE FROM product WHERE pid = ?`;
+
+    db.query(deleteProductQuery, [id], (err) => {
+      if (err) {
+        console.error("Error deleting product:", err);
+        return res
+          .status(500)
+          .json({ error: "An error occurred while deleting product" });
+      }
+
+      res
+        .status(200)
+        .json({ message: "Product deleted successfully", status: true });
+    });
+  });
+};

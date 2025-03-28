@@ -17,3 +17,13 @@ textarea,
 select {
   @apply outline-none border rounded p-2;
 }
+
+.hide::-webkit-scrollbar {
+  display: none;
+}
+
+.hide {
+  overflow: auto; /* Allows scrolling */
+  -ms-overflow-style: none; /* Hide scrollbar in IE/Edge */
+  scrollbar-width: none; /* Hide scrollbar in Firefox */
+}

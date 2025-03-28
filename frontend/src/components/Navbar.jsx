@@ -1,17 +1,61 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import logo1 from "../assets/images/logo.png";
 import { AuthContext } from "../context/authContext";
-import { MdDashboard } from "react-icons/md";
-import { post } from "../utils/api";
+import { MdDashboard, MdMessage } from "react-icons/md";
+import { IoIosNotifications } from "react-icons/io";
+import { get, post } from "../utils/api";
+import { io } from "socket.io-client";
+const socket = io("http://localhost:5555");
 import { toast } from "react-toastify";
 
 const Navbar = () => {
   const { currentUser, logout } = useContext(AuthContext);
-  console.log(currentUser);
+  const [notifications, setNotifications] = useState([]);
+  const [notification, setNotification] = useState([]);
+  const [open, setOpen] = useState(false);
+  // console.log(currentUser);
+  useEffect(() => {
+    const fetchApi = async () => {
+      try {
+        // Fetch stored notifications from MySQL
+        const res = await get("/notifications");
+        console.log(res, 21);
+
+        setNotifications(res); // No need for `.json()`, Axios already parses JSON
+
+        // Listen for real-time notifications
+        socket.on("notification", (newNotification) => {
+          setNotification((prev) => [newNotification, ...prev]);
+        });
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    };
+
+    fetchApi(); // Call the async function
+
+    return () => {
+      socket.off("notification"); // Clean up the socket listener
+    };
+  }, [notification]);
+  // console.log(notification, ": Notification");
 
   const handleLogout = async () => {
     await logout();
+  };
+  const convertToNepaliTime = (utcDate) => {
+    const date = new Date(utcDate);
+
+    // Format date and time separately
+    const formattedDate = date.toLocaleDateString("en-US", {
+      timeZone: "Asia/Kathmandu",
+    });
+    const formattedTime = date.toLocaleTimeString("en-US", {
+      timeZone: "Asia/Kathmandu",
+    });
+
+    return { formattedDate, formattedTime };
   };
 
   return (
@@ -94,14 +138,24 @@ const Navbar = () => {
             <p className="hidden md:block">Login</p>
           </Link>
         )}
-        {currentUser ? (
-          <Link
-            to="/shoppingCart"
-            className="justify-center items-center text-2xl flex flex-col text-gray-800"
-          >
-            <i className="fa-solid fa-bag-shopping"></i>
-            <p className="text-[1.2rem]">cart</p>
-          </Link>
+        {currentUser?.role_id === 2 ? (
+          <>
+            <div className="flex justify-center items-center gap-8">
+              <Link
+                to="/shoppingCart"
+                className="justify-center items-center text-2xl flex flex-col text-gray-800"
+              >
+                <i className="fa-solid fa-bag-shopping"></i>
+                <p className="text-[1.2rem]">cart</p>
+              </Link>
+              <div
+                onClick={() => setOpen(!open)}
+                className="cursor-pointer transition-all grid place-items-center rounded-full hover:bg-[#c8c8c8] p-2 bg-[#f1f1f1]"
+              >
+                <IoIosNotifications className="text-3xl" />
+              </div>
+            </div>
+          </>
         ) : (
           <Link
             to="/login"
@@ -129,6 +183,32 @@ const Navbar = () => {
           <i className="fa-solid fa-bars"></i>
         </button>
       </div>
+      {open && (
+        <div className="hide flex flex-col absolute z-50 top-[5rem] right-8 border-1 bg-[#f1f1f1] shadow-lg h-[calc(100vh-5rem)] w-[25rem] overflow-y-scroll">
+          {notifications.map((item, index) => {
+            const { formattedDate, formattedTime } = convertToNepaliTime(
+              item.created_at
+            );
+            return (
+              <>
+                <div className="flex border-b-1 p-2 gap-4">
+                  <div className="flex flex-col gap-1 items-center justify-center">
+                    <MdMessage className="text-4xl text-blue-500" />
+                    <span className="text-sm font-bold">
+                      {formattedDate} <br /> {formattedTime}
+                    </span>
+                  </div>
+                  <div className="h-auto w-1 bg-black"></div>
+                  <div className="flex  flex-col justify-center items-center gap-1">
+                    <h2 className="font-bold text-lg text-blue-500">{item.title}</h2>
+                    <p className="text-justify">{item.message}</p>
+                  </div>
+                </div>
+              </>
+            );
+          })}
+        </div>
+      )}
     </nav>
   );
 };

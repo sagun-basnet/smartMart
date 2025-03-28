@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import productService from "../services/productService.js";
-import { get } from "../../utils/api.jsx";
+import { get, post } from "../../utils/api.jsx";
+import { toast } from "react-toastify";
 
 const ProductsList = () => {
   const [products, setProducts] = useState([]);
   const [imageArr, setImageArr] = useState([]); // Store images per product ID
+  const [trigger, setTrigger] = useState(false);
   console.log(imageArr, 9);
-
   const fetchProducts = async () => {
     const res = await get("/api/get-products");
     // console.log(res, "products");
@@ -16,9 +17,19 @@ const ProductsList = () => {
     // Process images for each product
   };
 
+  const handleDelete = async (id) => {
+    const res = await post(`/api/delete-product/${id}`);
+    console.log(res, 21);
+    res.status
+      ? toast.success(res.message)
+      : toast.error("Error deleting product..");
+
+    setTrigger(!trigger);
+  };
+
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [trigger]);
 
   return (
     <div>
@@ -75,7 +86,7 @@ const ProductsList = () => {
                   Edit
                 </Link>
                 <button
-                  onClick={() => productService.deleteProduct(product.id)}
+                  onClick={() => handleDelete(product.pid)}
                   className="bg-red-500 p-2 px-4 rounded-md text-white"
                 >
                   Delete

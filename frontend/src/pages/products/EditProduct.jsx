@@ -8,6 +8,7 @@ import { get, post } from "../../utils/api";
 const EditProduct = () => {
   const { id } = useParams();
   const navigation = useNavigate();
+  const [prevDiscount, setPrevDiscount] = useState(0);
   const [product, setProduct] = useState({
     title: "",
     description: "",
@@ -36,6 +37,7 @@ const EditProduct = () => {
           discount: res[0].discount,
           quantity: res[0].quantity,
         });
+        setPrevDiscount(res[0].discount);
         setExistingImages(res[0].images.split(","));
       } catch (error) {
         console.error("Error fetching product:", error);
@@ -94,6 +96,17 @@ const EditProduct = () => {
           "Content-Type": "multipart/form-data",
         },
       });
+      if (parseFloat(product.discount) > parseFloat(prevDiscount)) {
+        const notification = {
+          title: `Product Discount`,
+          message: `${product.title} now has increase to ${product.discount}% discount!`,
+        };
+        await axios
+          .post("http://localhost:5555/send-notification", notification)
+          .then((res) => {
+            console.log(res.data, 110);
+          });
+      }
       toast.success(res.message);
       navigation("/dashboard");
     } catch (error) {
