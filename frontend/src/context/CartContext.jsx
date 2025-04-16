@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer } from "react";
+import React, { createContext, useContext, useEffect, useReducer } from "react";
 
 // Create Context for Cart
 const CartContext = createContext();
@@ -7,9 +7,18 @@ const CartContext = createContext();
 const cartReducer = (state, action) => {
   switch (action.type) {
     case "ADD_TO_CART":
+      const newCartItem = {
+        ...action.payload,
+        id: Date.now(), // or use uuid if available
+        image: action.payload.images?.[0]
+          ? `http://localhost:5555${action.payload.images[0]}`
+          : null,
+        quantity: 1,
+      };
+
       return {
         ...state,
-        cart: [...state.cart, { ...action.payload, quantity: 1 }],
+        cart: [...state.cart, newCartItem],
       };
 
     case "REMOVE_SELECTED":
@@ -44,8 +53,16 @@ const cartReducer = (state, action) => {
 // CartProvider component to wrap around the application
 const initialState = { cart: [] };
 
+const getInitialCart = () => {
+  const savedCart = localStorage.getItem("cart");
+  return savedCart ? { cart: JSON.parse(savedCart) } : initialState;
+};
+
 export const CartProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(cartReducer, initialState);
+  const [state, dispatch] = useReducer(cartReducer, getInitialCart());
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(state.cart));
+  }, [state.cart]);
   return (
     <CartContext.Provider value={{ cart: state.cart, dispatch }}>
       {children}

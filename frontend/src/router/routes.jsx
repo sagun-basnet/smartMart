@@ -20,6 +20,9 @@ import Groceries from "../components/shop/category/Groceries";
 import Checkout from "../components/Checkout";
 import Finished from "../components/Finished";
 import EditProduct from "../pages/products/EditProduct";
+import StoreMapSVG from "../components/StoreMapSVG";
+import IndoorMapPage from "../components/IndoorMapPage";
+import SmartMartMap from "../components/SmartMartMap";
 
 const AppRoutes = createBrowserRouter([
   {
@@ -60,6 +63,10 @@ const AppRoutes = createBrowserRouter([
     element: <Login />,
   },
   {
+    path: "/store-map",
+    element: <SmartMartMap />,
+  },
+  {
     path: "/register",
     element: <Register />,
   },
@@ -97,7 +104,7 @@ const AppRoutes = createBrowserRouter([
     element: <SingleProduct />,
   },
   {
-    path: "/product/checkout/:id",
+    path: "/product/checkout",
     element: <Checkout />,
   },
   {

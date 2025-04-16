@@ -3,10 +3,14 @@ import React from "react";
 import { UseCart } from "../context/CartContext";
 import { BiSolidCartAdd } from "react-icons/bi";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const ShoppingCart = () => {
   const { cart, dispatch } = UseCart();
   const [selectedItems, setSelectedItems] = useState([]);
+  const navigate = useNavigate();
+  // console.log(selectedItems, "selectedItems");
 
   // Handle the checkbox for selecting all items
   const handleSelectAll = () => {
@@ -118,7 +122,7 @@ const ShoppingCart = () => {
                     </div>
                   </div>
                   <div className="Price text-green-600  w-30">
-                    ${item.price}
+                    Rs. {item.price}
                   </div>
                   {/* Quantity Controls */}
                   <div className="flex items-center">
@@ -155,7 +159,24 @@ const ShoppingCart = () => {
               <span>Total:</span>
               <span>Rs. {total}</span>
             </div>
-            <button className="w-full mt-3 bg-blue-500 text-white py-2 rounded">
+            <button
+              className="bg-green-600 text-white px-4 p-2 rounded mt-4"
+              // disabled={selectedItems.length === 0}
+              onClick={() => {
+                if (selectedItems.length === 0) {
+                  toast.error(
+                    "Please select at least one item to proceed to checkout."
+                  );
+                  return;
+                }
+                const selectedCartItems = cart.filter((item) =>
+                  selectedItems.includes(item.id)
+                );
+                navigate("/product/checkout", {
+                  state: { items: selectedCartItems, fromSingleProduct: false },
+                });
+              }}
+            >
               Proceed to Checkout
             </button>
           </div>
