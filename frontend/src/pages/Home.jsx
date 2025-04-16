@@ -253,7 +253,7 @@ const Home = () => {
                           onClick={() => addToCart(product)}
                           className="bg-[#1f385c] text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-all "
                         >
-                          <BiSolidCartAdd className=" text-2xl" />{" "}
+                          <BiSolidCartAdd className=" text-2xl" />
                         </button>
                       </div>
                     </div>

@@ -11,7 +11,23 @@ const SingleProduct = () => {
   const { id } = useParams();
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [product, setProduct] = useState(null);
+  const navigate = useNavigate();
   // console.log(product, " :Product");
+
+  const handleBuyNow = (product) => {
+    if (!currentUser) {
+      toast.warning("Please login to proceed to checkout");
+      navigate("/login");
+      return;
+    }
+
+    navigate("/product/checkout", {
+      state: {
+        items: [product],
+        fromSingleProduct: true,
+      },
+    });
+  };
 
   // const mockData = [
   //   {
@@ -273,11 +289,13 @@ const SingleProduct = () => {
 
           <div className="flex justify-between">
             {currentUser ? (
-              <Link to={`/product/checkout/${product.pid}`}>
-                <button className="cursor-pointer mt-6 bg-[#1f385c] text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-all shadow-md text-lg font-medium transform hover:scale-105 flex gap-2 items-center">
-                  <FaRegCreditCard /> Buy
-                </button>
-              </Link>
+              <button
+                onClick={() => handleBuyNow(product)}
+                className="bg-[#1f385c] hover:bg-blue-700 text-white px-4 py-2 rounded mt-4 flex items-center gap-2 cursor-pointer"
+              >
+                <FaRegCreditCard />
+                Buy Now
+              </button>
             ) : (
               <Link to={`/login`}>
                 <button

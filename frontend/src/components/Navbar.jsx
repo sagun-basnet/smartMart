@@ -73,6 +73,12 @@ const Navbar = () => {
         >
           Home
         </Link>
+        <Link
+          to="/store-map"
+          className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-900 after:transition-all after:duration-300 hover:after:w-full"
+        >
+          Store map
+        </Link>
 
         <div className="relative">
           <select className="bg-transparent border-none text-gray-700 focus:outline-none">

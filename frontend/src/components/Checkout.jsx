@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-
+import { useLocation } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
 
 import { IoMdArrowRoundBack } from "react-icons/io";
@@ -9,14 +9,28 @@ import { get } from "../utils/api";
 import { post } from "../utils/api";
 
 const Checkout = () => {
-  const { id } = useParams();
+  // const { id } = useParams();
   // console.log(id, "pid");
+  const location = useLocation();
+  const { items, fromSingleProduct } = location.state || {};
+  useEffect(() => {
+    if (fromSingleProduct) {
+      console.log("Checkout from SingleProduct", items);
+    } else {
+      console.log("Checkout from cart", items);
+    }
+  }, [items]);
+  const productIds = items.map((item) => item.pid);
+  console.log(productIds, ":productIds");
+  const encodedProductIds = btoa(JSON.stringify(productIds));
+  console.log(items, ":Items");
 
   const { currentUser } = useContext(AuthContext);
   // console.log(currentUser.id);
 
   const [products, setProducts] = useState([]);
   const [esewa, setEsewa] = useState({});
+  const [totalPrice, setTotalPrice] = useState(0);
 
   // console.log(parseInt(products?.price), "From esewa state");
 
@@ -27,7 +41,7 @@ const Checkout = () => {
   const loadEsewa = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5555/api/verifyEsewa/${parseInt(id)}`
+        `http://localhost:5555/api/verifyEsewa/${parseInt(totalPrice)}`
       );
       setEsewa(response.data);
       console.log(response.data, 33);
@@ -38,29 +52,7 @@ const Checkout = () => {
 
   useEffect(() => {
     loadEsewa();
-  }, []);
-  function splitImagePaths(imageString) {
-    // Check if imageString is not null before splitting
-    return imageString ? imageString.split(",") : [];
-  }
-
-  const loadData = async () => {
-    try {
-      const response = await get(`/api/get-products-by-id/${parseInt(id)}`);
-
-      setProducts(response);
-      setImg(splitImagePaths(response.images)[0]);
-    } catch (err) {
-      console.log("error aayo data fetch garda: ".err);
-    }
-  };
-  // console.log(img);
-
-  useEffect(() => {
-    loadData();
-  }, []);
-  const str = String(products[0]?.images);
-  const beforeComma = str.slice(0, str.indexOf(","));
+  }, [totalPrice]);
 
   const navigation = useNavigate();
 
@@ -87,10 +79,17 @@ const Checkout = () => {
     return formattedNumber.split("").reverse().join("");
   }
 
-  const discountedPrice = (
-    products[0]?.price *
-    (1 - products[0]?.discount / 100)
-  ).toFixed(2);
+  const discountedPrice = (price, discount) =>
+    (price * (1 - discount / 100)).toFixed(2);
+
+  useEffect(() => {
+    if (items && items.length > 0) {
+      const total = items.reduce((sum, item) => {
+        return sum + parseInt(item.price) * (1 - item.discount / 100);
+      }, 0);
+      setTotalPrice(total);
+    }
+  }, [items]);
 
   // const products[0]? = products.find((product) => product.pid === parseInt(pid));
   return (
@@ -109,45 +108,62 @@ const Checkout = () => {
             </div>
             <span className="capitalize font-semibold">{currentUser.name}</span>
           </div>
-          <div className="product flex border-2 p-2">
-            <div className="img h-[5rem]">
-              <img
-                className="h-full w-full"
-                src={`http://localhost:5555${beforeComma}`}
-                alt=""
-              />
-            </div>
-            <div className="flex flex-col w-full">
-              <div className=" detail font-bold text-lg flex justify-between w-[100%] p-2">
-                <div className="flex flex-col">
-                  {" "}
-                  Package: &nbsp;
-                  <span className=" text-blue-500"> {products[0]?.title}</span>
+          <div className="product flex flex-col border-2 p-2">
+            {items?.map((item, ind) => {
+              return (
+                <div className="flex" key={ind}>
+                  <div className="img h-[5rem]">
+                    <img
+                      className="h-full w-full"
+                      src={`http://localhost:5555${item.images[0]}`}
+                      alt=""
+                    />
+                  </div>
+                  <div className="flex flex-col w-full">
+                    <div className=" detail font-bold text-lg flex justify-between w-[100%] p-2">
+                      <div className="flex flex-col">
+                        {" "}
+                        Package Name: &nbsp;
+                        <span className=" text-blue-500"> {item?.title}</span>
+                      </div>
+                      <div className="font-bold flex flex-col text-lg">
+                        <span>
+                          Rs.
+                          {formatNumberCustom(
+                            parseInt(
+                              discountedPrice(item?.price, item.discount)
+                            )
+                          )}
+                        </span>
+                        <span>Discount: {item.discount}%</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <span className="font-bold text-lg">
-                  Rs.{formatNumberCustom(parseInt(products[0]?.price))}
-                </span>
-              </div>
-            </div>
+              );
+            })}
           </div>
           <div className=" flex items-end flex-col">
-            <span className=" w-[70%] flex justify-between">
+            {/* <span className=" w-[70%] flex justify-between">
               <span>Subtotal</span>
-              <span>
-                Rs. {formatNumberCustom(parseInt(products[0]?.price))}
-              </span>
-            </span>
+              <span>Rs. {formatNumberCustom(parseInt(items[0]?.price))}</span>
+            </span> */}
             <span className=" w-[70%] flex justify-between">
               <span>Extra Charge</span>
               <span>-</span>
             </span>
-            <span className=" w-[70%] flex justify-between">
+            {/* <span className=" w-[70%] flex justify-between">
               <span>Discound percent</span>
-              <span>{products[0]?.discount}%</span>
-            </span>
+              <span>{items[0]?.discount}%</span>
+            </span> */}
             <span className=" w-[70%] font-bold flex justify-between">
               <span>Total Due</span>
-              <span>Rs. {formatNumberCustom(parseInt(discountedPrice))}</span>
+              <span>
+                Rs.{" "}
+                {formatNumberCustom(
+                  parseInt(totalPrice) || parseInt(items[0]?.price)
+                )}
+              </span>
             </span>
           </div>
         </div>
@@ -171,7 +187,7 @@ const Checkout = () => {
               type="text"
               id="amount"
               name="amount"
-              value={parseInt(discountedPrice)}
+              value={parseInt(totalPrice)}
               required
             />
             <input
@@ -187,7 +203,7 @@ const Checkout = () => {
               type="text"
               id="total_amount"
               name="total_amount"
-              value={parseInt(discountedPrice)}
+              value={parseInt(totalPrice)}
               required
             />
             <input
@@ -227,7 +243,7 @@ const Checkout = () => {
               type="text"
               id="success_url"
               name="success_url"
-              value={`http://localhost:5555/api/success/${id}/${currentUser.id}`}
+              value={`http://localhost:5555/api/success/${encodedProductIds}/${currentUser.id}`}
               required
             />
             <input

@@ -117,6 +117,37 @@ export const getProductById = (req, res) => {
   });
 };
 
+export const getProductByIds = (req, res) => {
+  const ids = req.body.ids; // array of pids
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ error: "Invalid product ID list" });
+  }
+
+  const q = `
+    SELECT 
+      p.*, 
+      GROUP_CONCAT(i.image) AS images
+    FROM 
+      product p
+    LEFT JOIN 
+      image i ON p.pid = i.pid
+    WHERE 
+      p.pid IN (?)
+    GROUP BY 
+      p.pid;
+  `;
+
+  db.query(q, [ids], (err, results) => {
+    if (err) {
+      console.error("Error fetching products:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    res.json(results);
+  });
+}
+
 export const editProduct = (req, res) => {
   const { id } = req.params;
   const { title, description, category, price, discount, quantity } = req.body;
