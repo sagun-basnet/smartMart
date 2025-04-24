@@ -19,7 +19,14 @@ export const addProduct = (req, res) => {
   }
 
   // Insert product into database
-  const values = [title, description, category, price, discount, quantity];
+  const values = [
+    title,
+    description,
+    category,
+    parseInt(price),
+    discount,
+    quantity,
+  ];
   const sql = `INSERT INTO product(title, description, category, price, discount, quantity) VALUES(?,?,?,?,?,?)`;
 
   db.query(sql, values, (err, results) => {
@@ -118,13 +125,15 @@ export const getProductById = (req, res) => {
 };
 
 export const getProductByIds = (req, res) => {
-  const ids = req.body.ids; // array of pids
+  const ids = req.body.ids;
+  console.log(ids, ":IDs");
 
   if (!Array.isArray(ids) || ids.length === 0) {
     return res.status(400).json({ error: "Invalid product ID list" });
   }
 
-  const q = `
+  const placeholders = ids.map(() => "?").join(",");
+  const sql = `
     SELECT 
       p.*, 
       GROUP_CONCAT(i.image) AS images
@@ -133,20 +142,20 @@ export const getProductByIds = (req, res) => {
     LEFT JOIN 
       image i ON p.pid = i.pid
     WHERE 
-      p.pid IN (?)
+      p.pid IN (${placeholders})
     GROUP BY 
       p.pid;
   `;
 
-  db.query(q, [ids], (err, results) => {
+  db.query(sql, ids, (err, results) => {
     if (err) {
       console.error("Error fetching products:", err);
-      return res.status(500).json({ error: "Database error" });
+      return res.status(500).json({ error: "Failed to fetch products" });
     }
 
     res.json(results);
   });
-}
+};
 
 export const editProduct = (req, res) => {
   const { id } = req.params;

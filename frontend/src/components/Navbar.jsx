@@ -80,23 +80,6 @@ const Navbar = () => {
           Store map
         </Link>
 
-        <div className="relative">
-          <select className="bg-transparent border-none text-gray-700 focus:outline-none">
-            <option value="" disabled className="text-center">
-              Categories
-            </option>
-            <option value="new-arrivals " className="text-center">
-              New Arrivals
-            </option>
-            <option value="best-sellers" className="text-center">
-              Best Sellers
-            </option>
-            <option value="featured-products" className="text-center">
-              Featured Products
-            </option>
-          </select>
-        </div>
-
         <Link
           to="/shop"
           className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-900 after:transition-all after:duration-300 hover:after:w-full"
@@ -104,16 +87,10 @@ const Navbar = () => {
           Shop
         </Link>
         <Link
-          to="/blog"
+          to="/order-history"
           className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-900 after:transition-all after:duration-300 hover:after:w-full"
         >
-          Blog
-        </Link>
-        <Link
-          to="/contact"
-          className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-900 after:transition-all after:duration-300 hover:after:w-full"
-        >
-          Contact
+          Order history
         </Link>
       </div>
 
@@ -206,7 +183,9 @@ const Navbar = () => {
                   </div>
                   <div className="h-auto w-1 bg-black"></div>
                   <div className="flex  flex-col justify-center items-center gap-1">
-                    <h2 className="font-bold text-lg text-blue-500">{item.title}</h2>
+                    <h2 className="font-bold text-lg text-blue-500">
+                      {item.title}
+                    </h2>
                     <p className="text-justify">{item.message}</p>
                   </div>
                 </div>

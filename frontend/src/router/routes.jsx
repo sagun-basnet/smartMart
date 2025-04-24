@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
+import Dashboard from "../pages/dashboard/Dashboard";
 import ProductsList from "../pages/products/ProductList";
 import Home from "../pages/Home";
 import NotFound from "../pages/PageNotFound";
@@ -23,6 +24,10 @@ import EditProduct from "../pages/products/EditProduct";
 import StoreMapSVG from "../components/StoreMapSVG";
 import IndoorMapPage from "../components/IndoorMapPage";
 import SmartMartMap from "../components/SmartMartMap";
+import Sales from "../components/Sales";
+import OrderHistory from "../components/OrderHistory";
+import OrderManagement from "../components/OrderManagement";
+import TransactionManagement from "../components/TransactionManagement";
 
 const AppRoutes = createBrowserRouter([
   {
@@ -34,33 +39,50 @@ const AppRoutes = createBrowserRouter([
         element: <Home />,
       },
       { path: "/shoppingCart", element: <ShoppingCart /> },
-      {
-        path: "/shop",
-        element: <Shop />,
-        children: [
-          { path: "/shop", element: <AllProduct /> },
-          { path: "/shop/Clothes", element: <Clothes /> },
-          { path: "/shop/Watches", element: <Watches /> },
-          { path: "/shop/Electronics", element: <Electronics /> },
-          { path: "/shop/Groceries", element: <Groceries /> },
-        ],
-      },
     ],
   },
   {
     path: "/dashboard",
     element: <DashboardLayout />,
-    children: [{ path: "", element: <ProductsList /> }],
+    children: [
+      { path: "", element: <Dashboard /> },
+      { path: "product", element: <ProductsList /> },
+      {
+        path: "add-product",
+        element: <AddProduct />,
+      },
+      {
+        path: "sales",
+        element: <Sales />,
+      },
+      {
+        path: "order",
+        element: <OrderManagement />,
+      },
+      {
+        path: "transaction",
+        element: <TransactionManagement />,
+      },
+    ],
   },
   {
-    path: "/products",
-    element: <DashboardLayout />,
-    children: [{ path: "", element: <ProductsList /> }],
+    path: "/shop",
+    element: <Shop />,
+    children: [
+      { path: "/shop", element: <AllProduct /> },
+      { path: "/shop/Clothes", element: <Clothes /> },
+      { path: "/shop/Watches", element: <Watches /> },
+      { path: "/shop/Electronics", element: <Electronics /> },
+      { path: "/shop/Groceries", element: <Groceries /> },
+    ],
   },
-
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/order-history",
+    element: <OrderHistory />,
   },
   {
     path: "/store-map",
@@ -71,30 +93,6 @@ const AppRoutes = createBrowserRouter([
     element: <Register />,
   },
 
-  {
-    path: "/",
-    element: <MainLayout />,
-    children: [
-      {
-        path: "/",
-        element: <Home />,
-      },
-    ],
-  },
-  {
-    path: "/dashboard",
-    element: <DashboardLayout />,
-    children: [{ path: "", element: <ProductsList /> }],
-  },
-  {
-    path: "/products",
-    element: <DashboardLayout />,
-    children: [{ path: "", element: <ProductsList /> }],
-  },
-  {
-    path: "/add-product",
-    element: <AddProduct />,
-  },
   {
     path: "/edit-product/:id",
     element: <EditProduct />,

@@ -224,7 +224,7 @@ const AddProduct = () => {
           )}
           <button
             type="submit"
-            className="w-full p-3 bg-[#4bae30] text-[#fbfeeb] font-semibold rounded-md hover:text-[#4bae30] hover:bg-transparent hover:border cursor-pointer"
+            className="w-full p-3 bg-[#1E2939] text-[#fbfeeb] font-semibold rounded-md hover:text-[#1E2939] transi hover:bg-transparent hover:border cursor-pointer"
           >
             Add Product
           </button>

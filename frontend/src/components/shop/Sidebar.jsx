@@ -5,7 +5,7 @@ const Sidebar = () => {
   const [active, setActive] = useState("Shop");
 
   return (
-    <div className="h-[calc(100vh-5rem)] text-white bg-[#101828] w-[18rem] flex flex-col items-center gap-4 pt-8">
+    <div className="h-[calc(100vh)] text-white bg-[#101828] w-[18rem] flex flex-col items-center gap-4 pt-8">
       {/* Shop Link */}
       <ul className="w-full text-center">
         <Link to="/shop">

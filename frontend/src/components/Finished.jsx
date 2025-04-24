@@ -4,45 +4,34 @@ import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 
 const Finished = () => {
-  const { pid } = useParams();
-  const [data, setData] = useState({});
-  const [imageArr, setImageArr] = useState([]);
-  console.log(imageArr);
-  console.log(data);
+  const { pid } = useParams(); // This is encoded array of product ids (base64)
+  console.log("Encoded Product IDs:", pid);
 
-  const [date, setDate] = useState("");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:5555/api/get-products-by-id/${pid}`
+      const decodedIds = JSON.parse(atob(decodeURIComponent(pid)));
+      const idsQuery = decodedIds.join(",");
+
+      const response = await axios.post(
+        "http://localhost:5555/api/get-products-by-ids",
+        { ids: decodedIds }
       );
-      console.log(response);
 
-      setData(response.data[0]);
-
-      // Ensure correct image paths
-      const images = splitImagePaths(response.data[0]?.images);
-      setImageArr(images);
-
-      // Proper date formatting
-      let inputDate = new Date(response.data.date);
-      let formattedDate = inputDate
-        .toLocaleDateString("en-CA")
-        .replace(/-/g, "/");
-      setDate(formattedDate);
+      console.log("Fetched products:", response.data);
+      setProducts(response.data);
     } catch (err) {
-      console.log(err);
+      console.log("Error fetching multiple product details:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchData();
   }, [pid]);
-
-  function splitImagePaths(imageString) {
-    return imageString ? imageString.replace(/\\/g, "/").split(",") : [];
-  }
 
   return (
     <div className="flex justify-center items-center h-[100vh] w-full px-20">
@@ -54,23 +43,40 @@ const Finished = () => {
         <p className="text-lg text-center bg-primary p-1 font-bold">
           Your booking has been confirmed. Thank you for choosing us.
         </p>
-        <div className="flex justify-between">
-          {imageArr.map((img, index) => (
-            <div key={index} className="w-full h-[10rem]">
-              <img
-                className="w-full h-full border-2"
-                src={`http://localhost:5555${img}`}
-                alt="package"
-              />
-            </div>
-          ))}
-        </div>
+
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <>
+            {products.map((product, index) => {
+              const images =
+                product.images?.replace(/\\/g, "/").split(",") || [];
+              return (
+                <div key={index} className="border w-full mb-4 p-3">
+                  <div className="flex justify-center gap-4">
+                    {images.map((img, i) => (
+                      <img
+                        key={i}
+                        src={`http://localhost:5555${img}`}
+                        alt="product"
+                        className="w-[100px] h-[100px] object-cover border"
+                      />
+                    ))}
+                  </div>
+                  <div className="flex flex-col mt-2">
+                    <p className="text-lg">Product Name: {product.title}</p>
+                    <p className="text-lg">Price: Rs. {product.price}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </>
+        )}
+
         <div className="flex border-2 w-full justify-evenly">
           <div className="flex flex-col items-center w-1/2 border-2">
             <h1 className="text-2xl font-bold">Shopping Details</h1>
-            <p className="text-lg">Product Name: {data.title}</p>
-            <p className="text-lg">Price: {data.price}</p>
-            {/* <p className="text-lg">Date: {date}</p> */}
+            <p className="text-lg">Total Products: {products.length}</p>
           </div>
           <div className="w-1/2 flex flex-col justify-end items-center border-2">
             <h1 className="text-2xl font-bold">Contact Details</h1>
@@ -79,6 +85,7 @@ const Finished = () => {
             <p className="text-lg">Phone: 9845645612</p>
           </div>
         </div>
+
         <div className="flex">
           <Link to="/">
             <button className="bg-green-600 text-white p-2 px-4 rounded-md">

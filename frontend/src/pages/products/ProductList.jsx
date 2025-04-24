@@ -36,7 +36,7 @@ const ProductsList = () => {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold">Products</h2>
         <Link
-          to="/add-product"
+          to="/dashboard/add-product"
           className="bg-blue-500 text-white px-4 py-2 rounded-md"
         >
           Add Product

@@ -32,16 +32,19 @@ export const handleEsewaSuccess = async (req, res) => {
   const { data } = req.query;
 
   const encodedItems = req.params.pid; // still named pid in URL
+  const qty = req.params.qty; // still named pid in URL
   const uid = req.params.uid;
 
   const productIds = JSON.parse(
     Buffer.from(encodedItems, "base64").toString("utf-8")
   );
+  const quantity = JSON.parse(Buffer.from(qty, "base64").toString("utf-8"));
 
   let decodedString = atob(data);
   decodedString = JSON.parse(decodedString);
 
   console.log("Product IDs:", productIds);
+  console.log("Product Quantity:", quantity);
   console.log("User ID:", uid);
   console.log("Decoded Amount:", decodedString.total_amount);
 
@@ -58,16 +61,38 @@ export const handleEsewaSuccess = async (req, res) => {
         let lastInsertedSaleId = null;
 
         // loop through productIds and insert each
-        for (const pid of productIds) {
+        for (let i = 0; i < productIds.length; i++) {
+          const pid = productIds[i];
+          const qtyValue = quantity[i];
+
+          // Insert into sales table
           await new Promise((resolve, reject) => {
             const sql =
-              "INSERT into `sales`(`user_id`, `product_id`) value(?, ?)";
-            db.query(sql, [parseInt(uid), parseInt(pid)], (err, data) => {
+              "INSERT INTO `sales`(`user_id`, `product_id`, `quantity`) VALUES (?, ?, ?)";
+            db.query(
+              sql,
+              [parseInt(uid), parseInt(pid), parseInt(qtyValue)],
+              (err, data) => {
+                if (err) {
+                  console.error("Error inserting sale:", err);
+                  reject(err);
+                } else {
+                  lastInsertedSaleId = data.insertId;
+                  resolve();
+                }
+              }
+            );
+          });
+
+          // Deduct stock from product table
+          await new Promise((resolve, reject) => {
+            const sql =
+              "UPDATE product SET quantity = quantity - ? WHERE pid = ?";
+            db.query(sql, [parseInt(qtyValue), parseInt(pid)], (err, data) => {
               if (err) {
-                console.error("Error inserting sale:", err);
+                console.error("Error updating product stock:", err);
                 reject(err);
               } else {
-                lastInsertedSaleId = data.insertId;
                 resolve();
               }
             });
@@ -90,7 +115,14 @@ export const handleEsewaSuccess = async (req, res) => {
           );
         });
 
-        res.redirect(`http://localhost:5173/finished/${productIds}`); // no single pid now
+        const encodedProductIds = Buffer.from(
+          JSON.stringify(productIds)
+        ).toString("base64");
+        res.redirect(
+          `http://localhost:5173/finished/${encodeURIComponent(
+            encodedProductIds
+          )}`
+        ); // no single pid now
       } catch (error) {
         console.error("Error occurred:", error);
         res.status(500).json({ error: "Payment processing failed." });

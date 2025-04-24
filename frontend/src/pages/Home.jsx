@@ -10,6 +10,10 @@ const Home = () => {
   const [products, setProduct] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [hotItems, setHotItems] = useState([]);
+  console.log(hotItems, "hotItems");
+  const [featuredItems, setFeaturedItems] = useState([]);
+  console.log(featuredItems, "featuredItems");
 
   const { cart, dispatch } = UseCart();
   console.log(cart);
@@ -123,25 +127,74 @@ const Home = () => {
       price: "Rs. 8000",
     },
   ];
-  const fetchData = async () => {
-    const res = await get("/api/get-products");
-    for (let i = 0; i < res.length; i++) {
-      // console.log(res[i].images);
-      if (res[i].images) {
-        res[i].images = res[i].images.split(","); // Convert string to array
+
+  // If the data is still loading
+  // if (loading) return <p>Loading...</p>;
+
+  // If there's an error
+  if (error) return <p>Error: {error}</p>;
+
+  const extractPrice = (priceStr) => {
+    return parseFloat(priceStr.replace(/[^0-9.]/g, "").replace(/,/g, ""));
+  };
+
+  const generateHotItems = (products) => {
+    const categories = ["Clothes", "Electronics", "Grocery", "Watches"];
+    const hotItems = [];
+
+    categories.forEach((cat) => {
+      const itemsInCategory = products.filter((p) => p.category === cat);
+      if (itemsInCategory.length > 0) {
+        const topProduct = itemsInCategory.sort(
+          (a, b) => extractPrice(b.price) - extractPrice(a.price)
+        )[0];
+        hotItems.push(topProduct);
       }
+    });
+
+    return hotItems;
+  };
+
+  const generateFeaturedItems = (products) => {
+    const categories = ["Clothes", "Electronics", "Grocery", "Watches"];
+    const featuredItems = [];
+
+    categories.forEach((cat) => {
+      const itemsInCategory = products.filter((p) => p.category === cat);
+      if (itemsInCategory.length > 0) {
+        const randomIndex = Math.floor(Math.random() * itemsInCategory.length);
+        featuredItems.push(itemsInCategory[randomIndex]);
+      }
+    });
+
+    return featuredItems;
+  };
+
+  const fetchData = async () => {
+    try {
+      const res = await get("/api/get-products");
+
+      res.forEach((item) => {
+        if (item.images) {
+          item.images = item.images.split(",");
+        }
+      });
+
+      setProduct(res);
+      setHotItems(generateHotItems(res));
+      setFeaturedItems(generateFeaturedItems(res));
+    } catch (err) {
+      setError("Failed to load products");
+      console.log(err);
+    } finally {
+      setLoading(false);
     }
-    console.log(res, " :Response");
-    setProduct(res);
   };
 
   useEffect(() => {
     fetchData();
     // Simulate a delay to mock data fetching
-    setTimeout(() => {
-      // setProduct(mockData);
-      setLoading(false);
-    }, 1000); // Simulate a 1-second delay
+    // Simulate a 1-second delay
 
     // Fetch real data from API
     // fetch("http://localhost:5555/api/add-product")
@@ -161,12 +214,6 @@ const Home = () => {
     //     });
   }, []);
 
-  // If the data is still loading
-  if (loading) return <p>Loading...</p>;
-
-  // If there's an error
-  if (error) return <p>Error: {error}</p>;
-
   return (
     <div className="grid grid-rows-auto gap-3 px-3">
       {/* Hero Section */}
@@ -178,8 +225,8 @@ const Home = () => {
         />
         <div className="absolute top-1/4 left-8 sm:left-16 md:left-28">
           <h1 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-white leading-tight">
-            Lorem ipsum <br /> Placeasde
-            <br /> asmenda!
+          Bringing the <br /> Mall 
+            <br /> to Your Mobile.
           </h1>
           <button className="mt-4 bg-gray-100 h-10 sm:h-12 w-28 sm:w-32 rounded-3xl text-sm font-semibold hover:bg-gray-200">
             Shop Now {" >"}
@@ -250,7 +297,10 @@ const Home = () => {
                       </p>
                       <div>
                         <button
-                          onClick={() => addToCart(product)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            addToCart(product);
+                          }}
                           className="bg-[#1f385c] text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-all "
                         >
                           <BiSolidCartAdd className=" text-2xl" />
@@ -270,45 +320,23 @@ const Home = () => {
           Hot Items
         </h1>
       </div>
-
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-12">
-        {hotItem.map((product, index) => (
-          <Link to={`/products/${product.id}`}>
-            <div
-              key={index}
-              className="shadow-2xl shadow-gray-300 bg-gray-50 text-center rounded-2xl transition-transform duration-300 ease-in-out transform hover:scale-105 p-4"
+        {hotItems.map((item, index) => (
+          <div key={index} className="shadow-lg p-3 rounded-xl bg-white">
+            <img
+              src={`http://localhost:5555${item.images[0]}`}
+              alt={item.name}
+              className="h-40 w-full object-cover rounded-md"
+            />
+            <h2 className="text-md font-semibold mt-2">{item.title}</h2>
+            <p className="text-sm text-gray-600">{item.price}</p>
+            <button
+              onClick={() => addToCart(item)}
+              className="mt-2 bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded flex items-center gap-1"
             >
-              {/* Image */}
-              <div className="h-36 md:h-44 rounded-2xl">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover rounded-2xl"
-                />
-              </div>
-
-              {/* Product Details */}
-              <div className="h-20 mt-2  rounded-lg p-2 flex flex-col justify-center">
-                <div className=" w-full h-full overflow-hidden">
-                  <h1 className="font-bold">{product.name}</h1>
-                </div>
-
-                <div className="flex items-center justify-between mt-2">
-                  <p className="text-gray-700 font-semibold">
-                    Price: {product.price}
-                  </p>
-                  <div>
-                    <button
-                      onClick={() => addToCart(product)}
-                      className="bg-[#1f385c] text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-all "
-                    >
-                      <BiSolidCartAdd className=" text-2xl" />{" "}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Link>
+              <BiSolidCartAdd /> Add to Cart
+            </button>
+          </div>
         ))}
       </div>
 
@@ -316,48 +344,26 @@ const Home = () => {
 
       <div>
         <h1 className="font-extrabold text-2xl md:text-4xl text-gray-900">
-          Featured Product
+          Featured Products
         </h1>
       </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-12">
-        {featureItem.map((product, index) => (
-          <Link to={`/products/${product.id}`}>
-            <div
-              key={index}
-              className="shadow-2xl shadow-gray-300 bg-gray-50 text-center rounded-2xl transition-transform duration-300 ease-in-out transform hover:scale-105 p-4"
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-12">
+        {featuredItems.map((item, index) => (
+          <div key={index} className="shadow-lg p-3 rounded-xl bg-white">
+            <img
+              src={`http://localhost:5555${item.images[0]}`}
+              alt={item.name}
+              className="h-40 w-full object-cover rounded-md"
+            />
+            <h2 className="text-md font-semibold mt-2">{item.title}</h2>
+            <p className="text-sm text-gray-600">{item.price}</p>
+            <button
+              onClick={() => addToCart(item)}
+              className="mt-2 bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded flex items-center gap-1"
             >
-              {/* Image */}
-              <div className="h-36 md:h-44 rounded-2xl">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover rounded-2xl"
-                />
-              </div>
-
-              {/* Product Details */}
-              <div className="h-20 mt-2  rounded-lg p-2 flex flex-col justify-center">
-                <div className=" w-full  overflow-hidden ">
-                  <h1 className="font-bold">{product.name}</h1>
-                </div>
-
-                <div className="flex items-center justify-between mt-2">
-                  <p className="text-gray-700 font-semibold">
-                    Price: {product.price}
-                  </p>
-                  <div>
-                    <button
-                      onClick={() => addToCart(product)}
-                      className="bg-[#1f385c] text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-all "
-                    >
-                      <BiSolidCartAdd className=" text-2xl" />{" "}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Link>
+              <BiSolidCartAdd /> Add to Cart
+            </button>
+          </div>
         ))}
       </div>
     </div>

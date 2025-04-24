@@ -14,15 +14,20 @@ const Checkout = () => {
   const location = useLocation();
   const { items, fromSingleProduct } = location.state || {};
   useEffect(() => {
+    console.log(items, "Items from location state");
     if (fromSingleProduct) {
       console.log("Checkout from SingleProduct", items);
     } else {
       console.log("Checkout from cart", items);
     }
   }, [items]);
+
   const productIds = items.map((item) => item.pid);
-  console.log(productIds, ":productIds");
+  const quantities = items.map((item) => item.quantity);
+
+  // Encode both arrays as base64 strings
   const encodedProductIds = btoa(JSON.stringify(productIds));
+  const encodedQuantities = btoa(JSON.stringify(quantities));
   console.log(items, ":Items");
 
   const { currentUser } = useContext(AuthContext);
@@ -51,8 +56,10 @@ const Checkout = () => {
   };
 
   useEffect(() => {
-    loadEsewa();
-  }, [totalPrice]);
+    if (items?.length && totalPrice > 0) {
+      loadEsewa();
+    }
+  }, [totalPrice, items]);
 
   const navigation = useNavigate();
 
@@ -85,7 +92,12 @@ const Checkout = () => {
   useEffect(() => {
     if (items && items.length > 0) {
       const total = items.reduce((sum, item) => {
-        return sum + parseInt(item.price) * (1 - item.discount / 100);
+        return (
+          sum +
+          parseInt(item.price) *
+            (1 - item.discount / 100) *
+            parseInt(item.quantity)
+        );
       }, 0);
       setTotalPrice(total);
     }
@@ -121,7 +133,7 @@ const Checkout = () => {
                   </div>
                   <div className="flex flex-col w-full">
                     <div className=" detail font-bold text-lg flex justify-between w-[100%] p-2">
-                      <div className="flex flex-col">
+                      <div className="flex h-full justify-center flex-col">
                         {" "}
                         Package Name: &nbsp;
                         <span className=" text-blue-500"> {item?.title}</span>
@@ -136,6 +148,7 @@ const Checkout = () => {
                           )}
                         </span>
                         <span>Discount: {item.discount}%</span>
+                        <span>Quantity: {item.quantity}</span>
                       </div>
                     </div>
                   </div>
@@ -243,7 +256,7 @@ const Checkout = () => {
               type="text"
               id="success_url"
               name="success_url"
-              value={`http://localhost:5555/api/success/${encodedProductIds}/${currentUser.id}`}
+              value={`http://localhost:5555/api/success/${encodedProductIds}/${encodedQuantities}/${currentUser.id}`}
               required
             />
             <input

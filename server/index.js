@@ -6,6 +6,10 @@ import "dotenv/config";
 import authRoute from "./router/authRoute.js";
 import productRoute from "./router/productRoute.js";
 import esewaRoute from "./router/esewaRoute.js";
+import orderRoute from "./router/orderRoute.js";
+import salesRoute from "./router/salesRoute.js";
+import transactionRoute from "./router/transactionRoute.js";
+import userRoute from "./router/userRoute.js";
 
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -43,7 +47,7 @@ io.on("connection", (socket) => {
       }
 
       socket.emit("previous-notifications", rows);
-      console.log(rows, ":Main file log");
+      // console.log(rows, ":Main file log");
     }
   );
 
@@ -59,6 +63,10 @@ app.post("/send-notification", (req, res) => sendNotification(req, res, io));
 app.use("/api", authRoute);
 app.use("/api", productRoute);
 app.use("/api", esewaRoute);
+app.use("/api", orderRoute);
+app.use("/api", salesRoute);
+app.use("/api", transactionRoute);
+app.use("/api", userRoute);
 
 app.use(express.static("public"));
 

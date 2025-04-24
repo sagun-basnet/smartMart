@@ -61,7 +61,7 @@ const ShoppingCart = () => {
   const total = subtotal;
 
   return (
-    <div className="flex justify-center items-center pr-25 pl-25 ">
+    <div className="flex justify-center h-full items-center pr-25 pl-25 ">
       <div className="pl-5 pr-5 bg-gray-50 rounded-2xl pt-5">
         <h1 className="text-center font-extrabold text-4xl text-blue-950">
           SHOPPTING CART
@@ -87,7 +87,7 @@ const ShoppingCart = () => {
             </button>
           </div>
 
-          <div className="all_shoppingList p-2 rounded-lg h-[90vh] w-[60vw]">
+          <div className="all_shoppingList p-2 rounded-lg w-[60vw]">
             {cart.length === 0 ? (
               <p className=" text-red-500">Your cart is empty</p>
             ) : (
