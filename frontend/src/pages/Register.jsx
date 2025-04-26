@@ -27,19 +27,11 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Submitted ", formData);
     const res = await post("/api/register", formData);
-    console.log(res);
-
-    setFormData({
-      name: "",
-      email: "",
-      password: "",
-      phone: "",
-      address: "",
-    });
-    toast.success(res.message);
-    navigate("/login");
+    if (res.message === "OTP sent to your email.") {
+      toast.success("Check your email for OTP.");
+      navigate(`/verify-otp?email=${formData.email}`);
+    }
   };
 
   return (

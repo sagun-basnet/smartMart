@@ -28,6 +28,9 @@ import Sales from "../components/Sales";
 import OrderHistory from "../components/OrderHistory";
 import OrderManagement from "../components/OrderManagement";
 import TransactionManagement from "../components/TransactionManagement";
+import VerifyOtp from "../pages/Verifyotp";
+import ForgetPassword from "../components/ForgetPassword";
+import VerifyOtpAndReset from "../components/VerifyOtpAndReset";
 
 const AppRoutes = createBrowserRouter([
   {
@@ -79,6 +82,18 @@ const AppRoutes = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/verify-otp",
+    element: <VerifyOtp />,
+  },
+  {
+    path: "/forget-password",
+    element: <ForgetPassword />,
+  },
+  {
+    path: "/verify-otp-reset",
+    element: <VerifyOtpAndReset />,
   },
   {
     path: "/order-history",

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Card from "./Card";
-import { get } from "../../utils/api";
+import Card from "../Card";
+import { get } from "../../../utils/api";
 import { HiSearch, HiAdjustments, HiX } from "react-icons/hi";
 import { BsGrid3X3Gap, BsListUl } from "react-icons/bs";
 
-const AllProduct = () => {
+const CategoryTemplate = ({ categoryName, icon }) => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,11 +14,13 @@ const AllProduct = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await get("/api/get-products");
+      const res = await get("/api/get-products-by-category", {
+        category: categoryName,
+      });
       setData(res);
       setFilteredData(res);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error(`Error fetching ${categoryName}:`, error);
     } finally {
       setLoading(false);
     }
@@ -59,7 +61,12 @@ const AllProduct = () => {
       <div className="bg-white border-b border-gray-200 p-6">
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-800">All Products</h1>
+            <div className="flex items-center gap-3">
+              {icon}
+              <h1 className="text-3xl font-bold text-gray-800">
+                {categoryName}
+              </h1>
+            </div>
 
             <div className="flex items-center gap-4">
               <div className="flex gap-2">
@@ -94,14 +101,15 @@ const AllProduct = () => {
 
           <div className="relative">
             <input
+            style={{ paddingLeft: "2.5rem"  }}
               type="text"
-              placeholder="Search products..."
-              className="w-full !pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder={`Search ${categoryName.toLowerCase()}...`}
+              className=" w-full !pl-8 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               value={searchTerm}
               onChange={handleSearch}
             />
             <HiSearch
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400"
               size={20}
             />
 
@@ -118,7 +126,8 @@ const AllProduct = () => {
           {/* Search stats */}
           {searchTerm && (
             <div className="text-sm text-gray-500">
-              Found {filteredData.length} results for "{searchTerm}"
+              Found {filteredData.length} results for "{searchTerm}" in{" "}
+              {categoryName}
             </div>
           )}
         </div>
@@ -136,7 +145,7 @@ const AllProduct = () => {
               <>
                 <span className="text-6xl mb-4">🔍</span>
                 <p className="text-xl">
-                  No products found matching "{searchTerm}"
+                  No {categoryName.toLowerCase()} found matching "{searchTerm}"
                 </p>
                 <button
                   onClick={clearSearch}
@@ -148,7 +157,7 @@ const AllProduct = () => {
             ) : (
               <>
                 <span className="text-6xl mb-4">🛍️</span>
-                <p className="text-xl">No products found</p>
+                <p className="text-xl">No {categoryName.toLowerCase()} found</p>
               </>
             )}
           </div>
@@ -170,4 +179,4 @@ const AllProduct = () => {
   );
 };
 
-export default AllProduct;
+export default CategoryTemplate;

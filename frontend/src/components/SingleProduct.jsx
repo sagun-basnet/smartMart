@@ -1,18 +1,32 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { FaRegCreditCard } from "react-icons/fa6";
-import { FaCartArrowDown } from "react-icons/fa6";
-import { get } from "../utils/api";
+import {
+  FaRegCreditCard,
+  FaCartArrowDown,
+  FaHeart,
+  FaRegHeart,
+} from "react-icons/fa6";
+import { FiMinus, FiPlus, FiShoppingBag } from "react-icons/fi";
 import { BiSolidCartAdd } from "react-icons/bi";
+import { BsStarFill, BsStarHalf } from "react-icons/bs";
+import { MdLocalShipping } from "react-icons/md";
+import { IoShareSocialOutline } from "react-icons/io5";
+import { get } from "../utils/api";
 import { AuthContext } from "../context/authContext";
 import { toast } from "react-toastify";
+import { UseCart } from "../context/CartContext";
+
 const SingleProduct = () => {
   const { currentUser } = useContext(AuthContext);
+  const { cart, dispatch } = UseCart();
   const { id } = useParams();
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [product, setProduct] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [activeImage, setActiveImage] = useState(0);
+  const [isWishlist, setIsWishlist] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  // console.log(product, " :Product");
 
   const handleBuyNow = (product) => {
     if (!currentUser) {
@@ -23,353 +37,390 @@ const SingleProduct = () => {
 
     navigate("/product/checkout", {
       state: {
-        items: [product],
+        items: [{ ...product, quantity }],
         fromSingleProduct: true,
       },
     });
   };
 
-  // const mockData = [
-  //   {
-  //     id: 1,
-  //     name: "iPhone 13",
-  //     image:
-  //       "https://i.pinimg.com/736x/5d/c0/cf/5dc0cf0585fc6242d92b643c54f30476.jpg",
-  //     category: "Electronics",
-  //     price: 999,
-  //     discount: 10,
-  //     description:
-  //       "The iPhone 13 features a sleek design, a powerful A15 Bionic chip, and an advanced dual-camera system for stunning photography.",
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Summer set",
-  //     image:
-  //       "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  //     category: "Clothing",
-  //     price: 1200,
-  //     discount: 15,
-  //     description:
-  //       "Stay stylish and comfortable with this premium summer outfit set, designed for breathability and fashion-forward looks.",
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Samsung Galaxy S21",
-  //     image:
-  //       "https://i.pinimg.com/736x/c1/20/3d/c1203d1d8f6994b4fa91fcbb482ccf1e.jpg",
-  //     category: "Electronics",
-  //     price: 899,
-  //     discount: 12,
-  //     description:
-  //       "Samsung Galaxy S21 offers a dynamic AMOLED 2X display, powerful Exynos 2100 processor, and pro-grade cameras.",
-  //   },
-  //   {
-  //     id: 4,
-  //     name: "MacBook Pro 13",
-  //     image:
-  //       "https://i.pinimg.com/736x/a1/63/24/a16324df4f993b1b12d94a95f66764ad.jpg",
-  //     category: "Electronics",
-  //     price: 1300,
-  //     discount: 8,
-  //     description:
-  //       "MacBook Pro 13 comes with the Apple M1 chip, Retina display, and all-day battery life for ultimate performance.",
-  //   },
-  //   {
-  //     id: 5,
-  //     name: "Coat set",
-  //     image:
-  //       "https://plus.unsplash.com/premium_photo-1676225680209-19a398a9b38a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  //     category: "Clothing",
-  //     price: 7500,
-  //     discount: 18,
-  //     description:
-  //       "This elegant coat set is designed for a sophisticated look, perfect for formal and winter occasions.",
-  //   },
-  //   {
-  //     id: 6,
-  //     name: "Winter set",
-  //     image:
-  //       "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  //     category: "Clothing",
-  //     price: 2777,
-  //     discount: 10,
-  //     description:
-  //       "Stay warm and stylish with this high-quality winter clothing set, perfect for chilly days.",
-  //   },
-  //   {
-  //     id: 7,
-  //     name: "Dell XPS 13",
-  //     image:
-  //       "https://i.pinimg.com/736x/f5/95/1b/f5951b5564d563e51f53a5cdec268815.jpg",
-  //     category: "Electronics",
-  //     price: 1200,
-  //     discount: 10,
-  //     description:
-  //       "Dell XPS 13 features an InfinityEdge display, 11th Gen Intel processors, and an ultra-thin design for portability.",
-  //   },
-  //   {
-  //     id: 8,
-  //     name: "Apple",
-  //     image:
-  //       "https://plus.unsplash.com/premium_photo-1661322640130-f6a1e2c36653?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  //     category: "Food",
-  //     price: 300,
-  //     discount: 5,
-  //     description:
-  //       "Fresh and juicy apples packed with nutrients to boost your health and well-being.",
-  //   },
-  //   {
-  //     id: 9,
-  //     name: "Apple Watch Series 7",
-  //     image:
-  //       "https://i.pinimg.com/736x/61/e9/ff/61e9ffac91f05bb610c6c774f17c7177.jpg",
-  //     category: "Electronics",
-  //     price: 400,
-  //     discount: 10,
-  //     description:
-  //       "Apple Watch Series 7 comes with a larger, always-on Retina display and advanced health tracking features.",
-  //   },
-  //   {
-  //     id: 10,
-  //     name: "Sony WH-1000XM4",
-  //     image:
-  //       "https://i.pinimg.com/736x/c3/8f/ab/c38fabd0168efa39bf9f86ccbf6b881e.jpg",
-  //     category: "Electronics",
-  //     price: 350,
-  //     discount: 12,
-  //     description:
-  //       "Sony WH-1000XM4 offers industry-leading noise cancellation and superior sound quality for an immersive listening experience.",
-  //   },
-  //   {
-  //     id: 11,
-  //     name: "Winter set",
-  //     image:
-  //       "https://images.unsplash.com/photo-1605027990121-cbae9e0642df?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  //     category: "Clothing",
-  //     price: 2777,
-  //     discount: 10,
-  //     description:
-  //       "A stylish and warm winter clothing set that keeps you comfortable in cold weather.",
-  //   },
-  //   {
-  //     id: 12,
-  //     name: "Summer set",
-  //     image:
-  //       "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  //     category: "Clothing",
-  //     price: 1200,
-  //     discount: 15,
-  //     description:
-  //       "Perfect for summer, this lightweight and comfortable clothing set is a must-have for the season.",
-  //   },
-  //   {
-  //     id: 13,
-  //     name: "Canon EOS R8 Camera",
-  //     image:
-  //       "https://i1.adis.ws/i/canon/eos-r8-frt_gallery-module_05_365x228_aa065f319187416e9ccdd3d67a9ba48b?$hotspot-dt-jpg$",
-  //     category: "Electronics",
-  //     price: 30000,
-  //     discount: 8,
-  //     description:
-  //       "Canon EOS R8 Camera delivers exceptional image quality, fast autofocus, and 4K video recording capabilities.",
-  //   },
-  //   {
-  //     id: 14,
-  //     name: "Wireless Bluetooth Headphones",
-  //     image: "https://m.media-amazon.com/images/I/616tDnOfX4L._AC_SL1500_.jpg",
-  //     category: "Electronics",
-  //     price: 8000,
-  //     discount: 10,
-  //     description:
-  //       "Enjoy high-quality audio and wireless convenience with these Bluetooth headphones, featuring long battery life.",
-  //   },
-  // ];
-  const fetchData = async () => {
-    const res = await get(`/api/get-products-by-id/${parseInt(id)}`);
-
-    // console.log(res, ":RES");
-    if (res.length > 0 && res[0].images) {
-      res[0].images = res[0].images.split(","); // Convert string to array
+  const handleAddToCart = (product) => {
+    if (!currentUser) {
+      toast.warning("Please login to add items to cart");
+      navigate("/login");
+      return;
     }
-    console.log(res[0]?.images, " :images");
-    setProduct(res[0]);
+
+    dispatch({ type: "ADD_TO_CART", payload: product });
+        toast.success("Product added to cart successfully");
+    // Add your cart logic here
   };
-  const fetchAllProduct = async () => {
-    if (!product?.category) return;
-    const res = await get(
-      `/api/get-products-by-category?category=${product.category}`
-    );
-    console.log(res, ":RES");
 
-    for (let i = 0; i < res.length; i++) {
-      console.log(res[i].images);
-      if (res[i].images) {
-        res[i].images = res[i].images.split(","); // Convert string to array
-      }
+  const increaseQuantity = () => {
+    setQuantity((prev) => prev + 1);
+  };
+
+  const decreaseQuantity = () => {
+    if (quantity > 1) {
+      setQuantity((prev) => prev - 1);
     }
-    // if (res.length > 0) {
-    // }
-    setRelatedProducts(res);
+  };
+
+  const toggleWishlist = () => {
+    setIsWishlist(!isWishlist);
+    toast.success(
+      isWishlist
+        ? `${product.title} removed from wishlist`
+        : `${product.title} added to wishlist`
+    );
+  };
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const res = await get(`/api/get-products-by-id/${parseInt(id)}`);
+
+      if (res.length > 0 && res[0].images) {
+        res[0].images = res[0].images.split(","); // Convert string to array
+      }
+      setProduct(res[0]);
+    } catch (error) {
+      console.error("Error fetching product:", error);
+      toast.error("Failed to load product details");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchRelatedProducts = async () => {
+    if (!product?.category) return;
+
+    try {
+      const res = await get(
+        `/api/get-products-by-category?category=${product.category}`
+      );
+
+      for (let i = 0; i < res.length; i++) {
+        if (res[i].images) {
+          res[i].images = res[i].images.split(",");
+        }
+      }
+
+      setRelatedProducts(res);
+    } catch (error) {
+      console.error("Error fetching related products:", error);
+    }
   };
 
   useEffect(() => {
     if (product?.category) {
-      fetchAllProduct();
+      fetchRelatedProducts();
     }
   }, [product?.category]);
 
   useEffect(() => {
     fetchData();
-
-    // const selectedProduct = mockData.find((item) => item.id === parseInt(id));
-    // setProduct(selectedProduct);
+    window.scrollTo(0, 0);
   }, [id]);
 
-  if (!product) {
+  if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen text-xl font-semibold text-gray-700">
-        Product not found
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
       </div>
     );
   }
 
-  const discountedPrice = (
-    product?.price *
-    (1 - product?.discount / 100)
-  ).toFixed(2);
+  if (!product) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen text-xl font-semibold text-gray-700">
+        <FiShoppingBag className="text-5xl mb-4 text-gray-400" />
+        <p>Product not found</p>
+        <Link to="/products" className="mt-4 text-blue-600 hover:underline">
+          Browse other products
+        </Link>
+      </div>
+    );
+  }
 
-  console.log(relatedProducts, ":RELATED");
+  const discountedPrice = product.discount
+    ? (product.price * (1 - product.discount / 100)).toFixed(2)
+    : product.price;
 
   return (
-    <div className="bg-gray-100 min-h-screen flex  flex-col items-center justify-center px-4 py-10">
-      <div className="container mx-auto bg-white rounded-2xl shadow-lg overflow-hidden p-6 md:p-10 flex flex-col md:flex-row gap-10 max-w-4xl h-[60vh]">
-        <div className="w-full md:w-1/2 flex justify-center ">
-          <img
-            src={`http://localhost:5555${product?.images[0]}`}
-            alt={product.name}
-            className="w-full h-auto rounded-xl shadow-md transition-transform transform hover:scale-105"
-          />
-        </div>
+    <div className="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Breadcrumb */}
+        <nav className="flex mb-8 text-sm font-medium text-gray-500">
+          <Link to="/" className="hover:text-blue-600">
+            Home
+          </Link>
+          <span className="mx-2">/</span>
+          <Link to="/products" className="hover:text-blue-600">
+            Products
+          </Link>
+          <span className="mx-2">/</span>
+          <span className="text-gray-900">{product.title}</span>
+        </nav>
 
-        <div className="w-full md:w-1/2 flex flex-col justify-center">
-          <h1 className="text-3xl font-extrabold text-gray-800 mb-4">
-            {product.title}
-          </h1>
-          {/* Quantity Controls */}
-          <div className="flex items-center">
-            <button className="bg-gray-300 text-black px-2 py-1 rounded-l">
-              -
-            </button>
-            <span className="px-3">{""}</span>
-            <button className="bg-gray-300 text-black px-2 py-1 rounded-r">
-              +
-            </button>
-          </div>
-          <p className="text-gray-500 text-lg mb-2 font-medium">
-            <span className="text-gray-700">{product.description}</span>
-          </p>
-
-          {discountedPrice > 0 && (
-            <p className="text-xl font-bold text-gray-700 ">
-              Price:{" "}
-              <span className="line-through text-red-500 font-semibold text-md">
-                {" "}
-                {Math.round(product.price)}{" "}
-              </span>
-              <span className="ml-4">-{Math.round(product.discount)}%</span>
-            </p>
-          )}
-
-          <p className="text-lg font-bold text-green-600">
-            Rs:{" "}
-            {discountedPrice > 0
-              ? Math.round(discountedPrice)
-              : Math.round(price.toFixed(2))}
-          </p>
-
-          <div className="flex justify-between">
-            {currentUser ? (
-              <button
-                onClick={() => handleBuyNow(product)}
-                className="bg-[#1f385c] hover:bg-blue-700 text-white px-4 py-2 rounded mt-4 flex items-center gap-2 cursor-pointer"
-              >
-                <FaRegCreditCard />
-                Buy Now
-              </button>
-            ) : (
-              <Link to={`/login`}>
+        {/* Product Detail Section */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden p-6 lg:p-8 mb-12">
+          <div className="flex flex-col lg:flex-row gap-10">
+            {/* Product Images */}
+            <div className="w-full lg:w-2/5">
+              <div className="relative mb-4 aspect-square bg-gray-100 rounded-xl overflow-hidden">
+                <img
+                  src={`http://localhost:5555${
+                    product?.images?.[activeImage] || product?.images?.[0]
+                  }`}
+                  alt={product.title}
+                  className="w-full h-full object-contain transition-transform hover:scale-105 duration-300"
+                />
                 <button
-                  onClick={() => toast.error("Please Login First..")}
-                  className="cursor-pointer mt-6 bg-[#1f385c] text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-all shadow-md text-lg font-medium transform hover:scale-105 flex gap-2 items-center"
+                  onClick={toggleWishlist}
+                  className="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md hover:bg-gray-100"
                 >
-                  <FaRegCreditCard /> Buy
+                  {isWishlist ? (
+                    <FaHeart className="text-red-500 text-xl" />
+                  ) : (
+                    <FaRegHeart className="text-gray-500 text-xl" />
+                  )}
                 </button>
-              </Link>
-            )}
-            <button className="cursor-pointer mt-6 bg-transparent border-2 border-[#1f385c]  text-[#1f385c] px-6 py-3 rounded-lg transition-all shadow-md text-lg font-medium transform hover:scale-105 flex gap-2 items-center">
-              <FaCartArrowDown /> Add to Cart
-            </button>
-          </div>
-        </div>
-      </div>
+              </div>
 
-      {/* Related Products Section */}
-
-      <div className="mt-10 w-full flex justify-center flex-col items-center">
-        <h1 className="text-5xl font-bold">Related Products</h1>
-        {relatedProducts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
-            {relatedProducts.slice(0, 4).map(
-              (item, index) =>
-                item.pid !== product.pid && (
-                  <Link key={index} to={`/products/${item.pid}`}>
+              {/* Thumbnail Images */}
+              {product.images && product.images.length > 1 && (
+                <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
+                  {product.images.map((img, index) => (
                     <div
                       key={index}
-                      className="shadow-2xl shadow-gray-300 bg-gray-50 text-center rounded-2xl transition-transform duration-300 ease-in-out transform hover:scale-105 p-4 w-64"
+                      onClick={() => setActiveImage(index)}
+                      className={`cursor-pointer border-2 rounded-lg overflow-hidden w-20 h-20 flex-shrink-0 transition-all
+                        ${
+                          activeImage === index
+                            ? "border-blue-600"
+                            : "border-transparent"
+                        }`}
                     >
-                      {/* Image */}
-                      <div className="h-36 md:h-44 w-full rounded-2xl">
+                      <img
+                        src={`http://localhost:5555${img}`}
+                        alt={`${product.title} thumbnail ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Product Info */}
+            <div className="w-full lg:w-3/5 flex flex-col">
+              <div className="mb-4">
+                <span className="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mb-2">
+                  {product.category}
+                </span>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                  {product.title}
+                </h1>
+
+                {/* Ratings */}
+                <div className="flex items-center mb-4">
+                  <div className="flex text-yellow-400">
+                    <BsStarFill />
+                    <BsStarFill />
+                    <BsStarFill />
+                    <BsStarFill />
+                    <BsStarHalf />
+                  </div>
+                  <span className="ml-2 text-sm text-gray-500">
+                    (128 reviews)
+                  </span>
+                </div>
+              </div>
+
+              {/* Price */}
+              <div className="mb-6">
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-gray-900">
+                    Rs. {Math.round(discountedPrice)}
+                  </span>
+
+                  {product.discount > 0 && (
+                    <>
+                      <span className="ml-3 text-lg text-gray-400 line-through">
+                        Rs. {Math.round(product.price)}
+                      </span>
+                      <span className="ml-3 text-sm font-medium text-green-600">
+                        {Math.round(product.discount)}% off
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                <div className="mt-2 flex items-center text-green-600">
+                  <MdLocalShipping className="mr-1" />
+                  <span className="text-sm">Free shipping</span>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="mb-8">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Description
+                </h3>
+                <p className="text-gray-600">{product.description}</p>
+              </div>
+
+              {/* Quantity Controls */}
+              <div className="mb-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Quantity
+                </h3>
+                <div className="flex items-center">
+                  <button
+                    onClick={decreaseQuantity}
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded-l-lg transition-colors"
+                  >
+                    <FiMinus />
+                  </button>
+                  <span className="bg-gray-100 px-6 py-2 text-center w-16">
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={increaseQuantity}
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded-r-lg transition-colors"
+                  >
+                    <FiPlus />
+                  </button>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="mt-auto space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <button
+                    onClick={() => handleBuyNow(product)}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors shadow-md"
+                  >
+                    <FaRegCreditCard />
+                    Buy Now
+                  </button>
+
+                  <button
+                    onClick={() => handleAddToCart(product)}
+                    className="w-full bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 py-3 px-6 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors shadow-sm"
+                  >
+                    <FaCartArrowDown />
+                    Add to Cart
+                  </button>
+                </div>
+
+                {/* Share */}
+                <div className="flex justify-end">
+                  <button className="text-gray-500 hover:text-blue-600 flex items-center gap-1 text-sm">
+                    <IoShareSocialOutline className="text-lg" />
+                    Share
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Related Products Section */}
+        <div className="mt-16">
+          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
+            Related Products
+          </h2>
+
+          {relatedProducts.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {relatedProducts
+                .filter((item) => item.pid !== product.pid)
+                .slice(0, 4)
+                .map((item, index) => (
+                  <div
+                    key={index}
+                    className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:translate-y-[-4px]"
+                  >
+                    <Link to={`/products/${item.pid}`}>
+                      <div className="aspect-square bg-gray-100 relative overflow-hidden">
                         <img
                           src={
-                            item.images !== null
-                              ? `http://localhost:5555${item?.images[0]}`
-                              : "hgj"
+                            item.images && item.images.length > 0
+                              ? `http://localhost:5555${item.images[0]}`
+                              : "https://via.placeholder.com/300"
                           }
                           alt={item.title}
-                          className="w-full h-full object-cover rounded-2xl"
+                          className="w-full h-full object-cover"
                         />
+                        {item.discount > 0 && (
+                          <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                            {Math.round(item.discount)}% OFF
+                          </span>
+                        )}
                       </div>
+                    </Link>
 
-                      {/* Product Details */}
-                      <div className="h-20 mt-2  rounded-lg p-2 flex flex-col justify-center">
-                        <div className=" w-full h-full overflow-hidden">
-                          <h1 className="font-bold">{item.title}</h1>
-                        </div>
+                    <div className="p-4">
+                      <Link to={`/products/${item.pid}`}>
+                        <h3 className="font-medium text-gray-900 mb-1 line-clamp-1">
+                          {item.title}
+                        </h3>
+                      </Link>
 
-                        <div className="flex items-center justify-between mt-2">
-                          <p className="text-gray-700 font-semibold">
-                            Price: {product.price}
+                      <div className="flex items-center justify-between mt-2">
+                        <div>
+                          <p className="font-semibold text-gray-900">
+                            Rs.{" "}
+                            {Math.round(
+                              item.discount
+                                ? item.price * (1 - item.discount / 100)
+                                : item.price
+                            )}
                           </p>
-                          <div>
-                            <button
-                              onClick={() => addToCart(product)}
-                              className="bg-[#1f385c] text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-all "
-                            >
-                              <BiSolidCartAdd className=" text-2xl" />{" "}
-                            </button>
-                          </div>
+                          {item.discount > 0 && (
+                            <p className="text-sm text-gray-500 line-through">
+                              Rs. {Math.round(item.price)}
+                            </p>
+                          )}
                         </div>
+
+                        <button
+                          onClick={() => {
+                            if (currentUser) {
+                              toast.success(`${item.title} added to cart`);
+                            } else {
+                              toast.warning("Please login first");
+                              navigate("/login");
+                            }
+                          }}
+                          className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors"
+                        >
+                          <BiSolidCartAdd className="text-xl" />
+                        </button>
                       </div>
                     </div>
-                  </Link>
-                )
-            )}
-          </div>
-        ) : (
-          <h2 className="text-3xl font-bold text-red-500 mt-10">
-            Related Product Not Found
-          </h2>
-        )}
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <div className="bg-white p-8 rounded-xl shadow-md text-center">
+              <FiShoppingBag className="text-4xl text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-medium text-gray-700 mb-2">
+                No related products found
+              </h3>
+              <p className="text-gray-500 mb-6">
+                We couldn't find any related products in this category
+              </p>
+              <Link
+                to="/products"
+                className="inline-block bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Browse all products
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -28,13 +28,19 @@ const Login = () => {
     // const res = await post("/api/login", formData);
     const res = await login(formData);
     console.log(res);
+    console.log("Login Response: ", res);
 
     setFormData({
       email: "",
       password: "",
     });
     toast.success(res.message);
-    navigate("/");
+    if (res.others.role_id === 1) {
+      toast.success("Welcome Admin");
+      navigate("/dashboard");
+    } else {
+      navigate("/");
+    }
   };
 
   return (
@@ -68,6 +74,9 @@ const Login = () => {
                 placeholder="Enter your password"
               />
             </div>
+            <Link to={"/forget-password"}>
+              <span>Forget password?</span>
+            </Link>
             <div className="flex justify-center">
               <button
                 type="submit"
